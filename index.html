@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Grand Theft Racer: Masterpiece</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M10 50 L20 30 L80 30 L90 50 L90 70 L10 70 Z' fill='crimson' stroke='white' stroke-width='2'/><circle cx='50' cy='50' r='15' fill='gold'/></svg>">
+    <title>Grand Theft Racer: Perfected</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M10 50 L20 30 L80 30 L90 50 L90 70 L10 70 Z' fill='crimson' stroke='white' stroke-width='2'/><circle cx='30' cy='50' r='5' fill='white'/><circle cx='70' cy='50' r='5' fill='white'/></svg>">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&display=swap');
@@ -24,6 +24,7 @@
             background: #050505; max-width: 100%; max-height: 100%;
         }
 
+        /* UI SCREENS */
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); display: flex; flex-direction: column;
@@ -33,6 +34,7 @@
 
         h1 { color: #f9b006; font-size: 3rem; text-transform: uppercase; margin-bottom: 20px; text-shadow: 0 0 15px #f9b006; }
 
+        /* HUD */
         #top-hud {
             position: absolute; top: 10px; left: 10px; right: 10px;
             display: none; justify-content: space-between; pointer-events: none; z-index: 15;
@@ -42,17 +44,36 @@
         .bar-wrap { width: 120px; height: 8px; background: #333; margin-top: 5px; transform: skewX(-20deg); border: 1px solid #fff; }
         .bar-fill { height: 100%; width: 100%; transition: width 0.1s; }
 
+        /* SETTINGS & CARDS */
+        #settings-btn {
+            position: absolute; top: 80px; right: 10px; font-size: 24px; cursor: pointer; z-index: 50;
+            color: #fff; background: rgba(0,0,0,0.6); padding: 10px; border: 2px solid #555; border-radius: 5px;
+        }
+        
         .card {
             background: #1a1a1a; border: 2px solid #444; padding: 20px; width: 160px;
             text-align: center; cursor: pointer; transition: 0.2s; margin: 10px;
         }
         .card:hover { border-color: #f9b006; transform: scale(1.05); background: #222; }
 
-        #settings-btn {
-            position: absolute; top: 80px; right: 10px; font-size: 20px; cursor: pointer; z-index: 50;
-            color: #888; background: rgba(0,0,0,0.8); padding: 8px; border: 1px solid #444;
+        /* PAUSE MENU (Fixed Visibility) */
+        #settings-modal {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 60; justify-content: center; align-items: center;
         }
-        
+        .pause-box {
+            background: #222; border: 3px solid #f9b006; padding: 40px; width: 320px; text-align: center;
+            box-shadow: 0 0 30px rgba(249, 176, 6, 0.3);
+        }
+        .pause-title { color: #fff; font-size: 30px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 5px; }
+        .setting-btn {
+            width: 100%; padding: 15px; margin-bottom: 15px; background: #333; color: #fff;
+            border: 2px solid #fff; font-family: 'Orbitron', sans-serif; font-size: 14px; cursor: pointer;
+            text-transform: uppercase; font-weight: bold;
+        }
+        .setting-btn:hover { background: #f9b006; color: #000; border-color: #f9b006; }
+
+        /* CONTROLS & WASTED */
         #mobile-controls {
             position: absolute; bottom: 20px; left: 0; width: 100%; height: 160px;
             display: none; pointer-events: none; z-index: 30;
@@ -69,7 +90,6 @@
             font-size: 5rem; color: #fff; background: #2980b9; padding: 10px 50px;
             transform: rotate(-3deg); border: 5px solid #fff; text-shadow: 5px 5px 0 #000;
         }
-        
         #ammo-count { color: #f1c40f; font-size: 20px; font-weight: bold; }
     </style>
 </head>
@@ -77,13 +97,14 @@
 
 <div id="settings-btn" onclick="Game.toggleSettings()">⚙️</div>
 
-<div id="settings-modal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:60; justify-content:center; align-items:center;">
-    <div style="background:#222; border:2px solid #f9b006; padding:30px; width:300px; text-align:center;">
-        <h2 style="margin-top:0; color:#f9b006;">PAUSED</h2>
-        <button class="card" style="width:100%; margin-bottom:10px;" onclick="Game.toggleSound()" id="btn-sound">SOUND: ON</button>
-        <button class="card" style="width:100%; margin-bottom:10px;" onclick="Game.toggleTouch()" id="btn-touch">TOUCH: OFF</button>
-        <button class="card" style="width:100%; border-color:#fff;" onclick="Game.toggleSettings()">RESUME</button>
-        <button class="card" style="width:100%; border-color:#e74c3c; color:#e74c3c" onclick="location.reload()">EXIT</button>
+<div id="settings-modal">
+    <div class="pause-box">
+        <div class="pause-title">PAUSED</div>
+        <button class="setting-btn" onclick="Game.toggleSound()" id="btn-sound">SOUND: ON</button>
+        <button class="setting-btn" onclick="Game.toggleTouch()" id="btn-touch">TOUCH: OFF</button>
+        <hr style="border-color:#555; margin: 20px 0;">
+        <button class="setting-btn" style="border-color:#2ecc71; color:#2ecc71;" onclick="Game.toggleSettings()">RESUME GAME</button>
+        <button class="setting-btn" style="border-color:#e74c3c; color:#e74c3c;" onclick="location.reload()">EXIT TO MENU</button>
     </div>
 </div>
 
@@ -129,7 +150,7 @@
     <div id="wasted-screen" class="screen">
         <div id="busted-text">WASTED</div>
         <p style="font-size: 24px;">STOLEN: $<span id="final-score">0</span></p>
-        <p style="margin-top: 30px; color: #f9b006;">PRESS [SPACE] TO RESPAWN</p>
+        <p class="blink" style="margin-top: 30px; color: #f9b006;">PRESS [SPACE] TO RESPAWN</p>
     </div>
 
     <div id="mobile-controls">
@@ -157,7 +178,8 @@ const AudioSys = {
         else if(type==='crash'){ o.type='sawtooth'; o.frequency.exponentialRampToValueAtTime(10,t+0.3); g.gain.setValueAtTime(0.3,t); o.start(t); o.stop(t+0.3); }
         else if(type==='coin'){ o.type='sine'; o.frequency.setValueAtTime(1200,t); o.frequency.linearRampToValueAtTime(2000,t+0.1); g.gain.setValueAtTime(0.1,t); o.start(t); o.stop(t+0.1); }
         else if(type==='busted'){ o.type='triangle'; o.frequency.setValueAtTime(100,t); o.frequency.linearRampToValueAtTime(50,t+1); g.gain.setValueAtTime(0.5,t); o.start(t); o.stop(t+1); }
-        else if(type==='heli'){ o.type='square'; o.frequency.setValueAtTime(60,t); g.gain.setValueAtTime(0.1,t); o.start(t); o.stop(t+0.15); } 
+        else if(type==='heli'){ o.type='square'; o.frequency.setValueAtTime(60,t); g.gain.setValueAtTime(0.15,t); o.start(t); o.stop(t+0.15); } 
+        else if(type==='warn'){ o.type='sine'; o.frequency.setValueAtTime(800,t); g.gain.setValueAtTime(0.1,t); o.start(t); o.stop(t+0.1); } 
     }
 };
 
@@ -200,12 +222,13 @@ const Artist = {
     drawCar(ctx, x, y, type, color, w, h, hp) {
         ctx.save(); ctx.translate(x, y);
         
-        // Police Lights Cone
+        // Police Cone
         if(type==='police') {
              const blink = Date.now()%300 < 150;
              if(blink) {
                  ctx.globalCompositeOperation = 'lighter';
                  ctx.fillStyle='rgba(255,0,0,0.3)'; ctx.beginPath(); ctx.moveTo(0, -h/2); ctx.arc(0, -h/2, 200, -Math.PI*0.7, -Math.PI*0.3); ctx.fill();
+                 ctx.fillStyle='rgba(0,0,255,0.3)'; ctx.beginPath(); ctx.moveTo(0, -h/2); ctx.arc(0, -h/2, 200, -Math.PI*0.7, -Math.PI*0.3); ctx.fill();
                  ctx.globalCompositeOperation = 'source-over';
              }
         }
@@ -214,11 +237,8 @@ const Artist = {
         ctx.fillStyle = color; if(type==='police') ctx.fillStyle='#fff';
         ctx.beginPath(); ctx.roundRect(-w/2, -h/2, w, h, 4); ctx.fill();
         
-        // Damage Smoke
-        if(hp < 20) {
-            ctx.fillStyle = 'rgba(100,100,100,0.5)';
-            ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI*2); ctx.fill();
-        }
+        // Damage (Smoke)
+        if(hp < 20) { ctx.fillStyle='rgba(50,50,50,0.6)'; ctx.beginPath(); ctx.arc(0,0,15,0,Math.PI*2); ctx.fill(); }
 
         ctx.fillStyle='#111'; ctx.fillRect(-w/2+4,-h/2+15,w-8,15); ctx.fillRect(-w/2+4,h/2-25,w-8,10);
         ctx.fillStyle='#fff'; ctx.fillRect(-w/2+2,-h/2,8,4); ctx.fillRect(w/2-10,-h/2,8,4);
@@ -231,23 +251,20 @@ const Artist = {
     },
     drawPed(ctx, x, y, shirtColor) {
         ctx.save(); ctx.translate(x, y);
-        // Legs (Walking animation)
         let leg = Math.sin(Date.now()/50)*5;
         ctx.strokeStyle = '#333'; ctx.lineWidth=3;
         ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-3, 10+leg); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(3, 10-leg); ctx.stroke();
-        // Body
         ctx.fillStyle = shirtColor; ctx.fillRect(-5, -5, 10, 12);
-        // Head
         ctx.fillStyle = '#ffdbac'; ctx.beginPath(); ctx.arc(0, -8, 5, 0, Math.PI*2); ctx.fill();
         ctx.restore();
     },
     drawHeli(ctx, x, y, hp) {
         ctx.save(); ctx.translate(x, y);
-        ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(-20, 150, 60, 20, 0, 0, Math.PI*2); ctx.fill(); // Shadow
-        ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.beginPath(); ctx.ellipse(0, 0, 100, 8, Date.now()/30, 0, Math.PI*2); ctx.fill(); // Rotor
-        ctx.fillStyle='#333'; ctx.beginPath(); ctx.ellipse(0, 0, 25, 60, 0, 0, Math.PI*2); ctx.fill(); // Body
-        ctx.fillStyle='#f00'; ctx.fillRect(-25, -70, 50, 5); ctx.fillStyle='#0f0'; ctx.fillRect(-25, -70, (hp/30)*50, 5); // HP
+        ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(-20, 150, 60, 20, 0, 0, Math.PI*2); ctx.fill(); 
+        ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.beginPath(); ctx.ellipse(0, 0, 100, 8, Date.now()/30, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle='#333'; ctx.beginPath(); ctx.ellipse(0, 0, 25, 60, 0, 0, Math.PI*2); ctx.fill(); 
+        ctx.fillStyle='#f00'; ctx.fillRect(-25, -70, 50, 5); ctx.fillStyle='#0f0'; ctx.fillRect(-25, -70, (hp/30)*50, 5); 
         ctx.restore();
     }
 };
@@ -295,31 +312,37 @@ const Game = {
         if(this.paused) return;
         const p = this.player;
 
-        // CONTROLS & SPEED
+        // CONTROLS
         if(Input.left) p.x -= 6; if(Input.right) p.x += 6;
         if(p.x < 30) p.x=30; if(p.x>770) p.x=770;
 
-        let targetSpeed = 4; // Cinematic base speed
+        let targetSpeed = 4; 
         if(Input.up && p.nitro > 0) { targetSpeed = 22; p.nitro -= 0.5; if(Math.random()<0.1) AudioSys.play('nitro'); } 
         else { if(p.nitro<100) p.nitro+=0.1; }
         
         p.speed += (targetSpeed - p.speed) * 0.1;
         this.roadOffset = (this.roadOffset + p.speed * 2) % 100;
 
-        // HELICOPTER
+        // HELICOPTER LOGIC (Dodgeable)
         if(this.policeKilled >= 4 && !this.heli.active) { this.heli.active=true; this.heli.hp=30; this.spawnText("CHOPPER INBOUND!", 400, 300, 'red'); }
         if(this.heli.active) {
             let dx = p.x - this.heli.x; this.heli.x += dx * 0.05; this.heli.y = 120 + Math.sin(Date.now()/500)*20;
             if(Math.random()<0.05) AudioSys.play('heli');
             this.heli.timer++;
-            if(this.heli.timer > 120 && this.heli.timer > 180) {
-                 this.entities.push({x:this.heli.x, y:this.heli.y, type:'missile', speed: p.speed+10, w:10, h:20});
+            // Warning Phase (Laser)
+            if(this.heli.timer > 120 && this.heli.timer < 180) {
+                 if(this.heli.timer % 10 === 0) AudioSys.play('warn');
+            }
+            // Fire Phase
+            if(this.heli.timer > 180) {
+                 // Missile tracks WHERE YOU WERE, giving a chance to dodge
+                 this.entities.push({x:this.heli.x, y:this.heli.y, type:'missile', speed: p.speed+12, w:10, h:20, targetX: p.x});
                  this.heli.timer = 0;
             }
         }
 
         // SPAWNING
-        if(Math.random() < 0.05) { // Decor
+        if(Math.random() < 0.05) { 
             let side = Math.random()>0.5; let dx = side ? Math.random()*150 : 650+Math.random()*150; 
             this.scenery.push({x:dx, y:-50, type:this.theme.decor});
         }
@@ -328,9 +351,10 @@ const Game = {
         // Traffic
         if(Math.random() < 0.02) {
             let x = 220 + Math.random() * 360;
+            // Ensure no overlap spawn
             if(!this.entities.some(e=>Math.abs(e.x-x)<60 && Math.abs(e.y+100)<100)) {
                 let type = 'civ';
-                // Spawn Police ONLY if Crime > 0 or random check fails
+                // Only spawn police if Crime Level > 0
                 if(this.crimeLevel > 0 && Math.random() < 0.4) type='police';
                 if(Math.random()<0.06) type='ammo';
                 if(Math.random()<0.03) type='bundle';
@@ -347,12 +371,13 @@ const Game = {
             }
         }
         
-        // Pedestrians (Zebra & Jaywalkers)
+        // Pedestrians
         if(Math.random() < 0.02) {
             let zebra = this.envObjects.find(e => e.type === 'zebra' && e.y < 100 && e.y > -50);
-            if(zebra || Math.random() < 0.2) { // 20% Chance Jaywalker
+            if(zebra || Math.random() < 0.3) { 
                  let px = Math.random()>0.5?180:620;
-                 let skin = ['#f00','#0f0','#00f','#ff0','#0ff'][Math.floor(Math.random()*5)];
+                 // Random Shirt Colors
+                 let skin = ['#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#f1c40f'][Math.floor(Math.random()*5)];
                  this.entities.push({x:px, y:zebra?zebra.y:-50, type:'ped', speed:1, w:15, h:15, hp:1, vx:(px<400?2:-2), shirt: skin});
             }
             if(Math.random() < 0.05) { // Cop on sidewalk
@@ -372,17 +397,23 @@ const Game = {
         this.envObjects.forEach(e => e.y += p.speed * 2);
 
         this.entities.forEach(e => {
-            if(e.type === 'missile') { e.y += 15; if(e.x < p.x) e.x++; else e.x--; }
+            if(e.type === 'missile') { 
+                e.y += 15; 
+                // Weak Homing (Dodgeable)
+                if(e.targetX) { let diff = e.targetX - e.x; e.x += diff * 0.02; }
+            }
             else if (e.type.includes('ped')) { e.y += p.speed * 2; e.x += e.vx; }
             else {
                 let relSpeed = (p.speed - e.speed);
-                e.y += relSpeed * 2; e.x += e.vx; e.vx *= 0.95;
+                e.y += relSpeed * 2;
+                e.x += e.vx; e.vx *= 0.95;
 
                 // POLICE AI
                 if(e.type === 'police' && this.crimeLevel > 0) {
-                     if(e.y < p.y) e.y += 2.5; // Chase
-                     else e.y -= 1; // Block
-                     if(Math.abs(e.y - p.y) < 300) { if(e.x < p.x) e.x++; else e.x--; } // Ram
+                     // Ram player logic
+                     if(e.y < p.y) e.y += 2.5; 
+                     else e.y -= 1; // Brake check
+                     if(Math.abs(e.y - p.y) < 300) { if(e.x < p.x) e.x++; else e.x--; } 
                 }
             }
         });
@@ -394,12 +425,12 @@ const Game = {
         // COLLISIONS
         this.entities.forEach(e => {
             if(e.dead) return;
-            // Main Hitbox
+            // Check Collision
             if(Math.abs(p.x - e.x) < (p.w/2 + e.w/2) && Math.abs(p.y - e.y) < (p.h/2 + e.h/2)) {
                 
-                // BUSTED LOGIC
+                // BUSTED LOGIC: Police touches you and you are stopped
                 if(e.type === 'police' && p.speed < 2) {
-                    this.gameOver(true); // Busted
+                    this.gameOver(true); 
                 }
 
                 if(e.type === 'ammo') { e.dead=true; p.ammo+=20; this.spawnText("+AMMO", p.x, p.y-30, '#f1c40f'); AudioSys.play('coin'); }
@@ -416,14 +447,14 @@ const Game = {
                     this.crimeLevel = Math.max(1, this.crimeLevel);
                     
                     if(Math.abs(p.x - e.x) > 30) {
-                         // Side Swipe
+                         // SIDE SWIPE (Kick)
                          e.vx = (p.x < e.x) ? 15 : -15; 
                          p.hp -= 2; e.hp -= 10;
                     } else {
-                         // Rear End - Physics
+                         // REAR END (Damage + Slowdown)
                          p.hp -= 5; e.hp -= 15;
-                         p.speed *= 0.6; // Slow down player
-                         e.y -= 40; // Push enemy away
+                         p.speed *= 0.5; // Lose momentum
+                         if(p.y > e.y) e.y -= 40; else e.y += 40; // Physics bounce
                          this.spawnPart((p.x+e.x)/2, (p.y+e.y)/2, '#ccc', 5); // Smoke
                     }
                     if(e.hp<=0) { e.dead=true; this.spawnPart(e.x,e.y,'orange',20); if(e.type==='police') this.policeKilled++; }
@@ -434,10 +465,12 @@ const Game = {
         // Bullets
         this.bullets = this.bullets.filter(b => {
             let hit = false;
+            // Heli
             if(this.heli.active && Math.abs(b.x - this.heli.x)<40 && Math.abs(b.y - this.heli.y)<30) {
-                this.heli.hp--; hit=true; 
+                this.heli.hp--; hit=true; this.spawnPart(this.heli.x, this.heli.y, '#ccc', 1);
                 if(this.heli.hp<=0) { this.heli.active=false; this.score+=1000; this.spawnPart(this.heli.x,this.heli.y,'orange',60); }
             }
+            // Cars
             this.entities.forEach(e => {
                 if(!hit && !e.dead && ['civ','police'].includes(e.type) && Math.abs(b.x-e.x)<30 && Math.abs(b.y-e.y)<40) {
                     e.hp-=10; hit=true;
@@ -447,6 +480,7 @@ const Game = {
             return !hit && b.y > -50;
         });
 
+        // Cleanup: Don't vanish cars unless far away or destroyed
         this.entities = this.entities.filter(e => !e.dead && e.y < 1000 && e.y > -200);
         this.scenery = this.scenery.filter(s => s.y < 1000);
         this.envObjects = this.envObjects.filter(e => e.y < 1000);
@@ -484,6 +518,7 @@ const Game = {
 
         if(this.heli.active) {
             Artist.drawHeli(ctx, this.heli.x, this.heli.y, this.heli.hp);
+            // Laser Warning
             if(this.heli.timer > 120 && this.heli.timer % 10 < 5) {
                 ctx.strokeStyle='red'; ctx.lineWidth=3; 
                 ctx.beginPath(); ctx.moveTo(this.heli.x, this.heli.y); ctx.lineTo(this.player.x, this.player.y); ctx.stroke();
