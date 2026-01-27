@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Grand Theft Racer: Ultimate</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M10 50 L20 30 L80 30 L90 50 L90 70 L10 70 Z' fill='red'/><circle cx='25' cy='70' r='10' fill='black'/><circle cx='75' cy='70' r='10' fill='black'/></svg>">
+    <title>Grand Theft Racer: Definitive</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M10 50 L20 30 L80 30 L90 50 L90 70 L10 70 Z' fill='red' stroke='white' stroke-width='2'/><circle cx='25' cy='70' r='10' fill='black'/><circle cx='75' cy='70' r='10' fill='black'/></svg>">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&display=swap');
@@ -15,7 +15,7 @@
             font-family: 'Orbitron', sans-serif;
             color: white;
             user-select: none;
-            touch-action: none; /* Prevent zoom on mobile */
+            touch-action: none;
         }
 
         #game-container {
@@ -29,19 +29,19 @@
         }
 
         canvas {
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
-            border-left: 5px solid #333;
-            border-right: 5px solid #333;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            border-left: 5px solid #222;
+            border-right: 5px solid #222;
             background: #000;
             max-width: 100%;
             max-height: 100%;
         }
 
-        /* UI LAYERS */
+        /* UI SCREENS */
         .screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.92);
+            background: rgba(0,0,0,0.95);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -52,10 +52,10 @@
 
         .hidden { opacity: 0; pointer-events: none; z-index: -1; }
 
-        h1 { color: #f9b006; font-size: 3rem; text-shadow: 4px 4px 0 #000; margin-bottom: 10px; }
+        h1 { color: #f9b006; font-size: 3rem; text-shadow: 4px 4px 0 #000; margin-bottom: 10px; text-transform: uppercase; }
         h2 { color: #fff; font-size: 1.2rem; margin-bottom: 30px; letter-spacing: 2px; }
 
-        /* CARDS */
+        /* SELECTION CARDS */
         .selection-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
         .card {
             background: #1a1a1a;
@@ -69,7 +69,7 @@
         .card:hover { border-color: #f9b006; transform: scale(1.05); background: #222; }
         .card-icon { font-size: 40px; margin-bottom: 10px; }
 
-        /* TOP HUD */
+        /* HUD */
         #top-hud {
             position: absolute;
             top: 10px; left: 10px; right: 10px;
@@ -81,11 +81,11 @@
             text-shadow: 1px 1px 0 #000;
         }
 
-        .hud-box { background: rgba(0,0,0,0.6); padding: 5px 10px; border-radius: 4px; border: 1px solid #444; }
+        .hud-box { background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 4px; border: 1px solid #444; }
         .bar-wrap { width: 150px; height: 10px; background: #333; margin-top: 5px; transform: skewX(-20deg); border: 1px solid #fff; }
         .bar-fill { height: 100%; width: 100%; transition: width 0.1s; }
 
-        /* SETTINGS ICON */
+        /* SETTINGS BUTTON */
         #settings-btn {
             position: absolute;
             top: 20px; right: 20px;
@@ -94,53 +94,63 @@
             z-index: 50;
             color: #888;
             background: #111;
-            padding: 5px;
+            padding: 8px;
             border-radius: 5px;
             border: 1px solid #444;
+            transition: 0.2s;
         }
-        #settings-btn:hover { color: #fff; }
+        #settings-btn:hover { color: #fff; border-color: #fff; }
 
-        /* SETTINGS MODAL */
+        /* SETTINGS MENU */
         #settings-modal {
             position: absolute;
-            top: 60px; right: 20px;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 49;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .settings-content {
             background: #222;
             border: 2px solid #f9b006;
-            padding: 20px;
-            z-index: 50;
-            display: none;
-            width: 200px;
+            padding: 30px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
-        .setting-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 12px; align-items: center; }
-        .toggle-btn {
-            background: #444; color: #fff; padding: 5px 10px; cursor: pointer; border: none; width: 60px;
-        }
-        .toggle-on { background: #2ecc71; }
+        .setting-row { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; align-items: center; color: #fff; }
+        .toggle-btn { background: #444; color: #fff; padding: 5px 15px; cursor: pointer; border: none; width: 80px; }
+        .toggle-on { background: #2ecc71; color: #000; font-weight: bold; }
+        .menu-btn { width: 100%; padding: 10px; margin-top: 10px; background: #333; color: #fff; border: 1px solid #555; cursor: pointer; }
+        .menu-btn:hover { background: #f9b006; color: #000; }
 
         /* MOBILE CONTROLS */
         #mobile-controls {
             position: absolute;
             bottom: 20px; left: 0; width: 100%;
-            height: 120px;
-            display: none; /* Toggled in settings */
+            height: 140px;
+            display: none;
             pointer-events: none;
             z-index: 30;
         }
         .m-btn {
             position: absolute;
-            width: 60px; height: 60px;
-            background: rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.3);
+            width: 65px; height: 65px;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.4);
             border-radius: 50%;
             pointer-events: auto;
             display: flex; justify-content: center; align-items: center;
-            font-size: 20px; color: rgba(255,255,255,0.7);
+            font-size: 24px; color: rgba(255,255,255,0.8);
+            backdrop-filter: blur(2px);
         }
-        .m-btn:active { background: rgba(255,255,255,0.4); }
+        .m-btn:active { background: rgba(255,255,255,0.5); transform: scale(0.95); }
 
-        /* WASTED */
+        /* WASTED SCREEN */
         #wasted-screen {
-            background: rgba(150, 0, 0, 0.6);
+            background: rgba(180, 0, 0, 0.7);
             display: none;
             z-index: 100;
         }
@@ -156,18 +166,22 @@
 </head>
 <body>
 
-<div id="settings-btn" onclick="toggleSettings()">⚙️</div>
+<div id="settings-btn" onclick="Game.toggleSettings()">⚙️</div>
+
 <div id="settings-modal">
-    <div class="setting-row">
-        <span>SOUND FX</span>
-        <button id="btn-sound" class="toggle-btn toggle-on" onclick="toggleSound()">ON</button>
-    </div>
-    <div class="setting-row">
-        <span>TOUCH CTRLS</span>
-        <button id="btn-touch" class="toggle-btn" onclick="toggleTouch()">OFF</button>
-    </div>
-    <div class="setting-row" style="justify-content: center; margin-top: 10px;">
-        <button onclick="toggleSettings()" style="width:100%; background:#333; color:#fff; border:1px solid #555; padding:5px;">CLOSE</button>
+    <div class="settings-content">
+        <h2 style="margin-top:0; color:#f9b006;">PAUSED</h2>
+        <div class="setting-row">
+            <span>SOUND FX</span>
+            <button id="btn-sound" class="toggle-btn toggle-on" onclick="Game.toggleSound()">ON</button>
+        </div>
+        <div class="setting-row">
+            <span>TOUCH CTRL</span>
+            <button id="btn-touch" class="toggle-btn" onclick="Game.toggleTouch()">OFF</button>
+        </div>
+        <hr style="border-color:#444; margin: 20px 0;">
+        <button class="menu-btn" onclick="Game.toggleSettings()">RESUME GAME</button>
+        <button class="menu-btn" style="border-color:#e74c3c; color:#e74c3c" onclick="Game.exitToMenu()">EXIT TO MENU</button>
     </div>
 </div>
 
@@ -176,15 +190,15 @@
 
     <div id="top-hud">
         <div class="hud-box">
-            <div>ARMOR</div>
+            <div style="font-size:10px; color:#aaa">ARMOR</div>
             <div class="bar-wrap"><div id="hp-bar" class="bar-fill" style="background:#e74c3c"></div></div>
         </div>
         <div class="hud-box" style="text-align:center">
-            <div style="font-size:10px; color:#aaa">CASH</div>
-            <div style="font-size:20px; color:#f1c40f">$<span id="score-val">0</span></div>
+            <div style="font-size:10px; color:#aaa">STOLEN CASH</div>
+            <div style="font-size:24px; color:#f1c40f">$<span id="score-val">0</span></div>
         </div>
         <div class="hud-box" style="text-align:right">
-            <div>NITRO</div>
+            <div style="font-size:10px; color:#aaa">NITROUS</div>
             <div class="bar-wrap"><div id="nitro-bar" class="bar-fill" style="background:#3498db"></div></div>
         </div>
     </div>
@@ -214,75 +228,84 @@
             <div class="card" onclick="Game.setCar('racer')">
                 <div class="card-icon" style="color:#e74c3c">🏎️</div>
                 <div>SPEEDSTER</div>
-                <small>Fast / Fragile</small>
+                <small>Max Speed / Low Armor</small>
             </div>
             <div class="card" onclick="Game.setCar('tank')">
                 <div class="card-icon" style="color:#27ae60">🚙</div>
-                <div>JUGGERNAUT</div>
-                <small>Slow / Tough</small>
+                <div>ENFORCER</div>
+                <small>Med Speed / High Armor</small>
             </div>
         </div>
     </div>
 
     <div id="wasted-screen" class="screen">
         <div class="wasted-text">WASTED</div>
-        <p style="font-size: 20px;">TOTAL CASH: $<span id="final-score">0</span></p>
+        <p style="font-size: 20px;">CASH STOLEN: $<span id="final-score">0</span></p>
         <p class="blink" style="margin-top: 30px; color: #f9b006;">PRESS [SPACE] TO RESPAWN</p>
     </div>
 
     <div id="mobile-controls">
         <div class="m-btn" id="m-left" style="bottom: 20px; left: 20px;">←</div>
-        <div class="m-btn" id="m-right" style="bottom: 20px; left: 90px;">→</div>
+        <div class="m-btn" id="m-right" style="bottom: 20px; left: 100px;">→</div>
         <div class="m-btn" id="m-nitro" style="bottom: 20px; right: 20px; border-color:#3498db; color:#3498db">N</div>
-        <div class="m-btn" id="m-fire" style="bottom: 90px; right: 20px; border-color:#e74c3c; color:#e74c3c">F</div>
+        <div class="m-btn" id="m-fire" style="bottom: 100px; right: 20px; border-color:#e74c3c; color:#e74c3c">F</div>
     </div>
 </div>
 
 <script>
 /**
- * AUDIO SYSTEM (Synthesizer)
+ * AUDIO SYSTEM
+ * Synthesized SFX for performance and instant load
  */
 const AudioSys = {
     ctx: null,
     enabled: true,
-    init() {
-        if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    },
+    init() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
     play(type) {
         if(!this.enabled || !this.ctx) return;
         if(this.ctx.state === 'suspended') this.ctx.resume();
-
+        const t = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.connect(gain);
         gain.connect(this.ctx.destination);
 
-        const now = this.ctx.currentTime;
-        
         if (type === 'shoot') {
             osc.type = 'square';
-            osc.frequency.setValueAtTime(400, now);
-            osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
-            gain.gain.setValueAtTime(0.1, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-            osc.start(now);
-            osc.stop(now + 0.1);
+            osc.frequency.setValueAtTime(300, t);
+            osc.frequency.exponentialRampToValueAtTime(50, t + 0.1);
+            gain.gain.setValueAtTime(0.1, t);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+            osc.start(t); osc.stop(t + 0.1);
         } else if (type === 'coin') {
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(1200, now);
-            osc.frequency.exponentialRampToValueAtTime(1800, now + 0.1);
-            gain.gain.setValueAtTime(0.1, now);
-            gain.gain.linearRampToValueAtTime(0, now + 0.2);
-            osc.start(now);
-            osc.stop(now + 0.2);
-        } else if (type === 'crash') {
+            osc.frequency.setValueAtTime(1500, t);
+            osc.frequency.linearRampToValueAtTime(2500, t + 0.1);
+            gain.gain.setValueAtTime(0.1, t);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+            osc.start(t); osc.stop(t + 0.2);
+        } else if (type === 'nitro') {
             osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(100, now);
-            osc.frequency.exponentialRampToValueAtTime(20, now + 0.3);
-            gain.gain.setValueAtTime(0.3, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-            osc.start(now);
-            osc.stop(now + 0.3);
+            osc.frequency.setValueAtTime(100, t);
+            osc.frequency.linearRampToValueAtTime(300, t + 0.5);
+            gain.gain.setValueAtTime(0.2, t);
+            gain.gain.linearRampToValueAtTime(0, t + 0.5);
+            osc.start(t); osc.stop(t + 0.5);
+        } else if (type === 'siren') { // Short "Wee-Woo"
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(600, t);
+            osc.frequency.linearRampToValueAtTime(1200, t + 0.2);
+            osc.frequency.linearRampToValueAtTime(600, t + 0.4);
+            gain.gain.setValueAtTime(0.1, t);
+            gain.gain.linearRampToValueAtTime(0, t + 0.5);
+            osc.start(t); osc.stop(t + 0.5);
+        } else if (type === 'crash') {
+            osc.type = 'sawtooth'; // Rough sound
+            osc.frequency.setValueAtTime(100, t);
+            osc.frequency.exponentialRampToValueAtTime(10, t + 0.2);
+            gain.gain.setValueAtTime(0.3, t);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+            osc.start(t); osc.stop(t + 0.2);
         }
     }
 };
@@ -292,213 +315,195 @@ const AudioSys = {
  */
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const GAME_WIDTH = 800;
+const GAME_HEIGHT = 600;
 
-function resize() {
-    canvas.width = 800;
-    canvas.height = 600;
-}
+function resize() { canvas.width = GAME_WIDTH; canvas.height = GAME_HEIGHT; }
 resize();
 
-// SETTINGS LOGIC
-let settings = { sound: true, touch: false };
-function toggleSettings() {
-    const el = document.getElementById('settings-modal');
-    el.style.display = el.style.display === 'block' ? 'none' : 'block';
-}
-function toggleSound() {
-    settings.sound = !settings.sound;
-    AudioSys.enabled = settings.sound;
-    document.getElementById('btn-sound').innerText = settings.sound ? "ON" : "OFF";
-    document.getElementById('btn-sound').className = "toggle-btn " + (settings.sound ? "toggle-on" : "");
-}
-function toggleTouch() {
-    settings.touch = !settings.touch;
-    document.getElementById('btn-touch').innerText = settings.touch ? "ON" : "OFF";
-    document.getElementById('btn-touch').className = "toggle-btn " + (settings.touch ? "toggle-on" : "");
-    document.getElementById('mobile-controls').style.display = settings.touch ? 'block' : 'none';
-}
-
-// ASSETS
+// ASSETS & CONFIG
 const THEMES = {
-    metro: { road: '#222', grass: '#111', lane: '#00f3ff', decor: 'build', density: 0.05 },
+    metro: { road: '#222', grass: '#1a1a1a', lane: '#00f3ff', decor: 'build', density: 0.05 },
     desert: { road: '#654', grass: '#dcb', lane: '#fff', decor: 'cactus', density: 0.03 },
     carland: { road: '#555', grass: '#282', lane: '#fff', decor: 'tree', density: 0.08 }
 };
 const CARS = {
-    racer: { color: '#e74c3c', speed: 12, hp: 60 },
-    tank: { color: '#27ae60', speed: 8, hp: 150 }
+    racer: { color: '#e74c3c', speed: 12, hp: 60, w: 40, h: 70 },
+    tank: { color: '#27ae60', speed: 9, hp: 150, w: 50, h: 80 }
 };
 
 // INPUT
 const Input = { left:false, right:false, up:false, fire:false };
 
-// Keyboard
 window.addEventListener('keydown', e => {
-    AudioSys.init(); // Init audio on user interaction
-    if(Game.state === 'GAMEOVER' && e.code === 'Space') {
-        Game.restartSession();
-        return;
-    }
+    AudioSys.init();
+    if(Game.state === 'GAMEOVER' && e.code === 'Space') Game.restartSession();
     if(e.key === 'ArrowLeft') Input.left = true;
     if(e.key === 'ArrowRight') Input.right = true;
     if(e.key === 'Shift') Input.up = true;
-    if(e.code === 'Space' || e.key === 'f' || e.key === 'F') Input.fire = true;
+    if(e.code === 'Space' || e.key === 'f') Input.fire = true;
+    if(e.key === 'Escape') Game.toggleSettings();
 });
 window.addEventListener('keyup', e => {
     if(e.key === 'ArrowLeft') Input.left = false;
     if(e.key === 'ArrowRight') Input.right = false;
     if(e.key === 'Shift') Input.up = false;
-    if(e.code === 'Space' || e.key === 'f' || e.key === 'F') Input.fire = false;
+    if(e.code === 'Space' || e.key === 'f') Input.fire = false;
 });
 
-// Touch (mapped to buttons)
 const bindTouch = (id, k) => {
     const el = document.getElementById(id);
     el.addEventListener('touchstart', (e)=>{ e.preventDefault(); Input[k]=true; AudioSys.init(); });
     el.addEventListener('touchend', (e)=>{ e.preventDefault(); Input[k]=false; });
 };
-bindTouch('m-left', 'left');
-bindTouch('m-right', 'right');
-bindTouch('m-nitro', 'up');
-bindTouch('m-fire', 'fire');
+bindTouch('m-left', 'left'); bindTouch('m-right', 'right');
+bindTouch('m-nitro', 'up'); bindTouch('m-fire', 'fire');
 
-// ARTIST
 const Artist = {
-    drawCar(ctx, x, y, type, color) {
+    drawCar(ctx, x, y, type, color, w, h) {
         ctx.save();
         ctx.translate(x, y);
-        const w = 40, h = 70;
-        
         // Shadow
         ctx.fillStyle = 'rgba(0,0,0,0.5)';
         ctx.fillRect(-w/2+5, -h/2+5, w, h);
-
         // Body
         ctx.fillStyle = color;
         if(type === 'police') ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.roundRect(-w/2, -h/2, w, h, 4);
-        ctx.fill();
-
-        // Details
+        ctx.beginPath(); ctx.roundRect(-w/2, -h/2, w, h, 4); ctx.fill();
+        
+        // Detail
         if(type === 'police') {
-            ctx.fillStyle = '#000'; // Police doors
-            ctx.fillRect(-w/2, -10, w, 25);
-            ctx.fillStyle = '#fff';
-            ctx.fillText("POLICE", -18, 5);
+            ctx.fillStyle = '#111'; ctx.fillRect(-w/2, -10, w, 25);
+            ctx.fillStyle = '#fff'; ctx.font='10px Arial'; ctx.fillText('POLICE', -18, 5);
         }
-
-        // Windshield
-        ctx.fillStyle = '#111';
-        ctx.fillRect(-w/2+4, -h/2+15, w-8, 15);
+        // Glass
+        ctx.fillStyle = '#111'; 
+        ctx.fillRect(-w/2+4, -h/2+15, w-8, 15); // Front
         ctx.fillRect(-w/2+4, h/2-25, w-8, 10); // Rear
-
         // Lights
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(-w/2+2, -h/2, 8, 4);
-        ctx.fillRect(w/2-10, -h/2, 8, 4);
-
+        ctx.fillStyle = '#fff'; ctx.fillRect(-w/2+2, -h/2, 8, 4); ctx.fillRect(w/2-10, -h/2, 8, 4);
+        ctx.fillStyle = '#c00'; ctx.fillRect(-w/2+2, h/2-4, 8, 4); ctx.fillRect(w/2-10, h/2-4, 8, 4);
+        
         if(type === 'police') {
-            const blink = Date.now() % 200 > 100;
-            ctx.fillStyle = blink ? '#f00' : '#00f';
-            ctx.fillRect(-15, -5, 12, 5);
-            ctx.fillStyle = blink ? '#00f' : '#f00';
-            ctx.fillRect(3, -5, 12, 5);
+            const b = Date.now()%200 > 100;
+            ctx.fillStyle = b?'#f00':'#00f'; ctx.fillRect(-12,-6,10,6);
+            ctx.fillStyle = b?'#00f':'#f00'; ctx.fillRect(2,-6,10,6);
         }
         ctx.restore();
     },
-
-    drawPedestrian(ctx, x, y) {
-        ctx.fillStyle = '#fab'; // Skin
-        ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI*2); ctx.fill(); // Head
-        ctx.fillStyle = '#fff'; // Shirt
-        ctx.fillRect(x-5, y+5, 10, 8);
+    drawPed(ctx, x, y) {
+        // Visible Pedestrian
+        ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(x, y+15, 10, 4, 0, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#fdb'; // Skin
+        ctx.beginPath(); ctx.arc(x, y-15, 7, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#ffeb3b'; // Shirt (Bright Yellow)
+        ctx.fillRect(x-8, y-8, 16, 14);
+        ctx.fillStyle = '#3f51b5'; // Pants
+        ctx.fillRect(x-6, y+6, 5, 10); ctx.fillRect(x+1, y+6, 5, 10);
     },
-
-    drawDecor(ctx, x, y, type) {
-        if(type === 'tree') {
-            ctx.fillStyle = '#420'; ctx.fillRect(x-4, y, 8, 20);
-            ctx.fillStyle = '#282'; ctx.beginPath(); ctx.arc(x, y-10, 15, 0, Math.PI*2); ctx.fill();
-        } else if (type === 'build') {
-            ctx.fillStyle = '#111'; ctx.fillRect(x-15, y-50, 30, 50);
-            ctx.fillStyle = '#444'; ctx.fillRect(x-10, y-40, 5, 5); ctx.fillRect(x+5, y-40, 5, 5);
-        } else if (type === 'cactus') {
-            ctx.fillStyle = '#462'; ctx.fillRect(x-4, y-20, 8, 30);
-            ctx.fillRect(x-10, y-15, 16, 6);
+    drawObject(ctx, x, y, type) {
+        if(type==='coin') {
+            ctx.fillStyle = '#ffd700'; ctx.beginPath(); ctx.arc(x,y,15,0,Math.PI*2); ctx.fill();
+            ctx.strokeStyle='#b8860b'; ctx.lineWidth=3; ctx.stroke();
+            ctx.fillStyle='#000'; ctx.font='bold 20px Arial'; ctx.textAlign='center'; ctx.fillText('$',x,y+7);
+        } else if (type==='tree') {
+            ctx.fillStyle='#420'; ctx.fillRect(x-5,y,10,25);
+            ctx.fillStyle='#282'; ctx.beginPath(); ctx.arc(x,y-10,20,0,Math.PI*2); ctx.fill();
+        } else if (type==='build') {
+            ctx.fillStyle='#111'; ctx.fillRect(x-20,y-60,40,60);
+            ctx.fillStyle='#444'; ctx.fillRect(x-15,y-50,10,10); ctx.fillRect(x+5,y-50,10,10);
+        } else if (type==='cactus') {
+            ctx.fillStyle='#462'; ctx.fillRect(x-5,y-25,10,35); ctx.fillRect(x-12,y-15,24,6);
         }
     }
 };
 
 const Game = {
-    state: 'MENU',
-    frames: 0,
+    state: 'MENU', // MENU, PLAYING, PAUSED, GAMEOVER
+    paused: false,
+    settings: { sound: true, touch: false },
     theme: null,
     carConfig: null,
-    score: 0,
-    wanted: false, // Police trigger
-
-    player: { x: 400, y: 500, hp: 100, maxHp: 100, nitro: 100, speed: 0 },
-    roadOffset: 0,
     
+    player: { x: 400, y: 500, hp: 100, maxHp: 100, nitro: 100, speed: 0, w: 40, h: 70 },
+    score: 0,
+    roadOffset: 0,
+    wanted: false,
+
     entities: [],
     bullets: [],
     scenery: [],
     particles: [],
 
-    setTheme(name) {
-        this.theme = THEMES[name];
-        document.getElementById('screen-theme').classList.add('hidden');
-        document.getElementById('screen-car').classList.remove('hidden');
-    },
-
-    setCar(name) {
-        this.carConfig = CARS[name];
-        this.restartSession();
-    },
-
-    // 3. RESTART LOGIC (Space Button Restarts Same Game)
+    setTheme(n) { this.theme = THEMES[n]; document.getElementById('screen-theme').classList.add('hidden'); document.getElementById('screen-car').classList.remove('hidden'); },
+    setCar(n) { this.carConfig = CARS[n]; this.restartSession(); },
+    
     restartSession() {
         this.state = 'PLAYING';
-        this.player.hp = this.carConfig.hp;
-        this.player.maxHp = this.carConfig.hp;
-        this.player.nitro = 100;
-        this.player.speed = 0;
-        this.score = 0;
-        this.wanted = false;
+        this.paused = false;
+        Object.assign(this.player, { hp: this.carConfig.hp, maxHp: this.carConfig.hp, nitro: 100, speed: 0, x: 400 });
+        this.score = 0; this.wanted = false;
+        this.entities = []; this.bullets = []; this.scenery = []; this.particles = [];
         
-        this.entities = [];
-        this.bullets = [];
-        this.scenery = [];
-        this.particles = [];
-        this.player.x = 400;
-
         document.getElementById('screen-car').classList.add('hidden');
         document.getElementById('wasted-screen').style.display = 'none';
         document.getElementById('top-hud').style.display = 'flex';
-        
         this.loop();
     },
 
+    toggleSettings() {
+        const modal = document.getElementById('settings-modal');
+        if(this.state === 'PLAYING') {
+            this.state = 'PAUSED';
+            this.paused = true;
+            modal.style.display = 'flex';
+        } else if (this.state === 'PAUSED') {
+            this.state = 'PLAYING';
+            this.paused = false;
+            modal.style.display = 'none';
+            this.loop();
+        }
+    },
+    
+    exitToMenu() {
+        document.getElementById('settings-modal').style.display = 'none';
+        document.getElementById('top-hud').style.display = 'none';
+        document.getElementById('wasted-screen').style.display = 'none';
+        document.getElementById('screen-theme').classList.remove('hidden');
+        document.getElementById('screen-car').classList.add('hidden');
+        this.state = 'MENU';
+        this.paused = false;
+    },
+
+    toggleSound() { 
+        this.settings.sound = !this.settings.sound; 
+        AudioSys.enabled = this.settings.sound;
+        document.getElementById('btn-sound').innerText = this.settings.sound ? "ON" : "OFF";
+        document.getElementById('btn-sound').className = "toggle-btn " + (this.settings.sound ? "toggle-on" : "");
+    },
+    toggleTouch() {
+        this.settings.touch = !this.settings.touch;
+        document.getElementById('btn-touch').innerText = this.settings.touch ? "ON" : "OFF";
+        document.getElementById('btn-touch').className = "toggle-btn " + (this.settings.touch ? "toggle-on" : "");
+        document.getElementById('mobile-controls').style.display = this.settings.touch ? 'block' : 'none';
+    },
+
     update() {
-        this.frames++;
+        if(this.paused) return;
         const p = this.player;
 
-        // CONTROLS & PHYSICS
-        if(Input.left) p.x -= 6;
-        if(Input.right) p.x += 6;
-        
-        // 6. PEDESTAL (Sidewalk) Logic
-        // Canvas is 0-800. Road is 200-600.
-        // Clamp to full screen
-        if(p.x < 30) p.x = 30; 
-        if(p.x > 770) p.x = 770;
+        // CONTROLS
+        if(Input.left) p.x -= 7;
+        if(Input.right) p.x += 7;
+        if(p.x < 30) p.x = 30; if(p.x > 770) p.x = 770; // Clamp
 
-        // 5. NITRO FIX (Massive Speed Up)
+        // SPEED & NITRO LOGIC (Escape Physics)
         let targetSpeed = 8;
         if(Input.up && p.nitro > 0) {
-            targetSpeed = 25; // Huge boost
-            p.nitro -= 0.8;
-            this.addParticle(p.x, p.y+40, '#0ff', 2);
+            targetSpeed = 25; // Nitro Boost
+            p.nitro -= 0.6;
+            this.spawnParticle(p.x, p.y+40, '#0ff', 2);
+            if(Math.random()<0.1) AudioSys.play('nitro');
         } else {
             if(p.nitro < 100) p.nitro += 0.1;
         }
@@ -507,214 +512,195 @@ const Game = {
         // PARALLAX
         this.roadOffset = (this.roadOffset + p.speed * 2) % 100;
 
-        // SHOOTING (7. Gun fire)
-        if(Input.fire && this.frames % 10 === 0) {
-            this.bullets.push({x:p.x-15, y:p.y-20});
-            this.bullets.push({x:p.x+15, y:p.y-20});
-            AudioSys.play('shoot');
-        }
-
         // SPAWNING
-        // Traffic
         if(Math.random() < 0.02) {
             let type = 'civ';
-            let spawnX = 220 + Math.random() * 360;
+            let x = 220 + Math.random() * 360;
+            // Spawning Logic
+            if(Math.random() < 0.05) type = 'coin';
+            else if(this.wanted && Math.random() < 0.3) { type = 'police'; AudioSys.play('siren'); }
             
-            // Police logic
-            if(this.wanted && Math.random() < 0.3) type = 'police';
-            
-            // 4. Coins & Hearts
-            let r = Math.random();
-            if(r < 0.05) type = 'coin';
-            else if(r < 0.06) type = 'heart';
-
-            let spd = (type === 'police') ? 12 : 6;
-            if(type === 'coin' || type === 'heart') spd = 0; // Static on road
+            let spd = 6; // Civ speed
+            if(type === 'police') spd = 14; // Police speed (slower than Nitro 25, faster than base 8)
+            if(type === 'coin') spd = 0; // Stationary
 
             this.entities.push({
-                x: spawnX, y: -100,
-                type: type,
-                speed: spd,
-                color: `hsl(${Math.random()*360},70%,50%)`,
+                x, y: -100, type, speed: spd, 
                 hp: (type==='police'?50:20),
-                w: (type==='coin'||type==='heart'?20:40),
-                h: (type==='coin'||type==='heart'?20:70)
+                w: (type==='coin'?30:40), h: (type==='coin'?30:70),
+                color: type==='police'?'#fff':`hsl(${Math.random()*360},70%,50%)`
             });
         }
-
-        // 6. Pedestrians (On Sidewalks)
+        // Pedestrians
         if(Math.random() < 0.02) {
-            let pedX = Math.random() > 0.5 ? Math.random()*180 : 620+Math.random()*180;
-            this.entities.push({
-                x: pedX, y: -50, type: 'ped', speed: 1, w: 10, h: 10, hp: 1
-            });
+            let px = Math.random()>0.5 ? Math.random()*180 : 620+Math.random()*180;
+            this.entities.push({x:px, y:-50, type:'ped', speed:1, w:20, h:20, hp:1});
         }
-
         // Decor
         if(Math.random() < this.theme.density) {
             let dx = Math.random()>0.5 ? Math.random()*180 : 620+Math.random()*180;
-            this.scenery.push({x:dx, y:-50, type: this.theme.decor});
+            this.scenery.push({x:dx, y:-50, type:this.theme.decor});
         }
 
-        // UPDATE ENTITIES
+        // SHOOTING
+        if(Input.fire && this.score > 0 && Math.floor(Date.now()/100)%2===0) {
+            this.bullets.push({x:p.x-15,y:p.y-20}); this.bullets.push({x:p.x+15,y:p.y-20});
+            AudioSys.play('shoot');
+        }
+
+        // UPDATES
         this.scenery.forEach(s => s.y += p.speed * 2);
         
         this.entities.forEach(e => {
-            // Relative speed.
-            // If player boosts (25), civ(6) moves down fast (25-6 = 19).
-            // Police (12) moves down slower (25-12 = 13).
-            // If police chases, they should gain? 
-            // Simple logic: Everything moves relative to road.
-            
+            // RELATIVE PHYSICS
             let relSpeed = (p.speed - e.speed);
             
+            // Police AI: If behind player, they try to catch up. 
+            // BUT, if player uses Nitro (25), RelSpeed is 11 (25-14), so Police fall back visually.
             if(e.type === 'police' && this.wanted) {
-                // Police Catchup Logic
-                // If police behind, they speed up. If ahead, they slow down to block.
-                if(e.y < p.y) e.y += (p.speed * 0.5); // Come down screen
-                else e.y -= 2; // Move up logic handled by relSpeed mostly
-                
-                // Steer
-                if(Math.abs(e.y - p.y) < 400) {
-                    if(e.x < p.x) e.x += 1.5; else e.x -= 1.5;
+                if(e.y < p.y) {
+                    // Police acceleration to chase
+                    e.y += (p.speed * 0.2); // They gain slowly
+                } else {
+                    e.y -= 2; // Block player
                 }
-            } else {
-                e.y += relSpeed * 2; 
+                // Steer
+                if(Math.abs(e.y - p.y) < 400) { if(e.x < p.x) e.x++; else e.x--; }
             }
+            
+            e.y += relSpeed * 2; // Main movement
         });
 
         this.bullets.forEach(b => b.y -= 20);
         this.particles.forEach(pt => { pt.x+=pt.vx; pt.y+=pt.vy; pt.life-=0.1; });
 
-        // COLLISIONS
-        // Bullets vs Enemies
+        // COLLISIONS (SOLID PHYSICS)
+        this.entities.forEach(e => {
+            if(e.dead) return;
+
+            // Box Collision
+            let dx = p.x - e.x;
+            let dy = p.y - e.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            let minDist = (p.w + e.w) / 2; // Approximate radius
+
+            // Check overlap
+            if(Math.abs(dx) < (p.w/2 + e.w/2) && Math.abs(dy) < (p.h/2 + e.h/2)) {
+                
+                if(e.type === 'coin') {
+                    this.score += 100; e.dead = true; AudioSys.play('coin');
+                } else if (e.type === 'ped') {
+                    // Kill Pedestrian
+                    e.dead = true; this.wanted = true; this.score += 10;
+                    this.spawnParticle(e.x, e.y, 'red', 10);
+                    AudioSys.play('crash');
+                } else {
+                    // SOLID CAR COLLISION
+                    this.wanted = true;
+                    AudioSys.play('crash');
+                    
+                    // 1. Damage
+                    // Hitting back (dy > 0 means player is below/behind enemy)
+                    if(p.y > e.y) { 
+                        p.hp -= 10; // High damage for rear-ending
+                        e.hp -= 10; 
+                    } else {
+                        p.hp -= 2; // Side swipe
+                    }
+                    
+                    // 2. Displacement (Solid Body)
+                    // Push apart based on angle
+                    let angle = Math.atan2(dy, dx);
+                    let push = 10;
+                    p.x += Math.cos(angle) * push;
+                    p.y += Math.sin(angle) * push;
+                    
+                    this.spawnParticle((p.x+e.x)/2, (p.y+e.y)/2, 'orange', 5);
+
+                    if(e.hp <= 0) {
+                        e.dead = true;
+                        this.spawnParticle(e.x, e.y, '#f50', 20);
+                    }
+                }
+            }
+        });
+
+        // Bullet Hits
         this.bullets = this.bullets.filter(b => {
             let hit = false;
             this.entities.forEach(e => {
-                if(!hit && ['civ','police'].includes(e.type) && Math.abs(b.x-e.x)<30 && Math.abs(b.y-e.y)<40) {
-                    e.hp -= 20;
-                    hit = true;
-                    if(e.hp <= 0) {
-                        e.dead = true;
-                        this.score += 50;
-                        this.wanted = true; // 7. Shooting cars triggers police
-                        AudioSys.play('crash');
-                        this.addParticle(e.x, e.y, 'orange', 10);
+                if(!hit && !e.dead && ['civ','police'].includes(e.type)) {
+                    if(Math.abs(b.x-e.x)<30 && Math.abs(b.y-e.y)<40) {
+                        e.hp -= 10; hit = true;
+                        if(e.hp <= 0) { 
+                            e.dead = true; this.score += 50; this.wanted = true; 
+                            this.spawnParticle(e.x, e.y, 'orange', 15);
+                            AudioSys.play('crash');
+                        }
                     }
                 }
             });
             return !hit && b.y > -50;
         });
 
-        // Player vs Entities
-        this.entities.forEach(e => {
-            if(!e.dead && Math.abs(p.x - e.x) < (p.w/2 + e.w/2) && Math.abs(p.y - e.y) < (p.h/2 + e.h/2)) {
-                
-                if(e.type === 'coin') {
-                    this.score += 100;
-                    e.dead = true;
-                    AudioSys.play('coin');
-                } 
-                else if (e.type === 'heart') {
-                    p.hp = Math.min(p.maxHp, p.hp + 30);
-                    e.dead = true;
-                    AudioSys.play('coin');
-                }
-                else if (e.type === 'ped') {
-                    // 6. Kill Pedestrian
-                    e.dead = true;
-                    this.wanted = true; // Trigger Police
-                    this.addParticle(e.x, e.y, 'red', 5);
-                    AudioSys.play('crash');
-                }
-                else {
-                    // Car Crash (7. Clash sidewise)
-                    p.hp -= 5;
-                    e.hp -= 5;
-                    this.wanted = true; // Trigger Police
-                    AudioSys.play('crash');
-                    // Physics bounce
-                    if(p.x < e.x) p.x -= 10; else p.x += 10;
-                    if(e.hp <= 0) {
-                        e.dead = true;
-                        this.addParticle(e.x, e.y, 'orange', 10);
-                    }
-                }
-            }
-        });
-
         // Cleanup
-        this.entities = this.entities.filter(e => !e.dead && e.y < 900 && e.y > -200);
-        this.scenery = this.scenery.filter(s => s.y < 900);
+        this.entities = this.entities.filter(e => !e.dead && e.y < 1000 && e.y > -200);
+        this.scenery = this.scenery.filter(s => s.y < 1000);
         this.particles = this.particles.filter(p => p.life > 0);
 
         if(p.hp <= 0) this.gameOver();
     },
 
     draw() {
-        // BG
         ctx.fillStyle = this.theme.grass;
-        ctx.fillRect(0,0,canvas.width, canvas.height);
+        ctx.fillRect(0,0,GAME_WIDTH, GAME_HEIGHT);
 
         // Road
         ctx.fillStyle = this.theme.road;
-        ctx.fillRect(200, 0, 400, 600);
-        
+        ctx.fillRect(200, 0, 400, GAME_HEIGHT);
         // Lines
         ctx.fillStyle = this.theme.lane;
-        for(let i=0; i<700; i+=100) {
-            let y = (i + this.roadOffset) % 700 - 100;
+        for(let i=0; i<800; i+=100) {
+            let y = (i + this.roadOffset) % 800 - 100;
             ctx.fillRect(395, y, 10, 40);
         }
 
-        // Scenery
-        this.scenery.forEach(s => Artist.drawDecor(ctx, s.x, s.y, s.type));
-
-        // Entities
+        this.scenery.forEach(s => Artist.drawObject(ctx, s.x, s.y, s.type));
+        
         this.entities.forEach(e => {
-            if(e.type === 'coin') {
-                ctx.fillStyle = 'gold'; 
-                ctx.beginPath(); ctx.arc(e.x, e.y, 10, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = '#000'; ctx.font='12px Arial'; ctx.fillText('$', e.x-3, e.y+4);
-            } else if (e.type === 'heart') {
-                ctx.fillStyle = 'red'; ctx.font='20px Arial'; ctx.fillText('❤️', e.x-10, e.y+5);
+            if(e.type === 'coin' || e.type === 'tree' || e.type === 'cactus' || e.type === 'build') {
+                Artist.drawObject(ctx, e.x, e.y, e.type);
             } else if (e.type === 'ped') {
-                Artist.drawPedestrian(ctx, e.x, e.y);
+                Artist.drawPed(ctx, e.x, e.y);
             } else {
-                Artist.drawCar(ctx, e.x, e.y, e.type, e.color);
+                Artist.drawCar(ctx, e.x, e.y, e.type, e.color, e.w, e.h);
             }
         });
 
-        // Bullets
         ctx.fillStyle = '#ff0';
         this.bullets.forEach(b => ctx.fillRect(b.x, b.y, 4, 10));
 
-        // Player
-        Artist.drawCar(ctx, this.player.x, this.player.y, 'racer', this.carConfig.color);
+        Artist.drawCar(ctx, this.player.x, this.player.y, 'racer', this.carConfig.color, this.player.w, this.player.h);
 
-        // Particles
         this.particles.forEach(p => {
-            ctx.globalAlpha = p.life;
-            ctx.fillStyle = p.c;
-            ctx.fillRect(p.x, p.y, 4, 4);
-            ctx.globalAlpha = 1;
+            ctx.globalAlpha = p.life; ctx.fillStyle = p.c; ctx.fillRect(p.x, p.y, 4, 4); ctx.globalAlpha = 1;
         });
 
-        // HUD Updates
         document.getElementById('score-val').innerText = this.score;
         document.getElementById('hp-bar').style.width = (this.player.hp/this.player.maxHp*100)+'%';
         document.getElementById('nitro-bar').style.width = this.player.nitro+'%';
     },
 
     loop() {
-        if(this.state !== 'PLAYING') return;
-        this.update();
-        this.draw();
+        if(this.state === 'PLAYING') {
+            this.update();
+            this.draw();
+        }
         requestAnimationFrame(()=>this.loop());
     },
 
-    addParticle(x, y, c, n) {
-        for(let i=0; i<n; i++) this.particles.push({x, y, vx:(Math.random()-0.5)*10, vy:(Math.random()-0.5)*10, life:1, c});
+    spawnParticle(x, y, c, n) {
+        for(let i=0; i<n; i++) this.particles.push({x,y,vx:(Math.random()-0.5)*10,vy:(Math.random()-0.5)*10,life:1,c});
     },
 
     gameOver() {
