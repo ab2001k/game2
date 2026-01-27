@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Retro Pursuit: Wanted</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        :root {
+            --ui-bg: rgba(0, 0, 0, 0.85);
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #00ff41;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #111;
+            font-family: 'Press Start 2P', cursive;
+            touch-action: none;
+            color: white;
+            user-select: none;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            max-width: 100%;
+            max-height: 100%;
+            image-rendering: pixelated;
+        }
+
+        /* UI LAYERS */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: var(--ui-bg);
+            z-index: 10;
+            transition: opacity 0.3s;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        h1 {
+            color: var(--neon-blue);
+            text-shadow: 4px 4px 0px #000;
+            font-size: 2rem;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        button {
+            background: #222;
+            color: white;
+            border: 2px solid var(--neon-blue);
+            padding: 15px 20px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            margin: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0px #000;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        .theme-btn { border-color: var(--neon-pink); }
+        .car-btn { border-color: var(--neon-green); width: 200px; display: block; margin: 10px auto; }
+
+        /* HUD */
+        #hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 5;
+            font-size: 12px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .bar-container {
+            width: 100px;
+            height: 10px;
+            background: #333;
+            border: 2px solid white;
+            margin-top: 5px;
+        }
+        .bar-fill { height: 100%; transition: width 0.1s; }
+        #hp-bar { background: #ff3333; width: 100%; }
+        #nitro-bar { background: #00f3ff; width: 100%; }
+        
+        #score-display { text-align: right; }
+        #wanted-level { color: red; display: none; animation: flash 0.5s infinite; }
+
+        @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* TOUCH CONTROLS */
+        #touch-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            z-index: 8;
+            display: none; /* Toggled via JS */
+            pointer-events: none; /* Let touches pass through to buttons */
+        }
+
+        .t-btn {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            pointer-events: auto;
+            touch-action: none;
+        }
+        .t-btn:active { background: rgba(255, 255, 255, 0.5); }
+
+        #btn-left { bottom: 20px; left: 20px; }
+        #btn-right { bottom: 20px; left: 100px; }
+        #btn-nitro { bottom: 20px; right: 20px; background: rgba(0, 243, 255, 0.2); border-color: var(--neon-blue); }
+        #btn-shoot { bottom: 90px; right: 20px; background: rgba(255, 50, 50, 0.2); border-color: red; }
+
+        /* SETTINGS OVERLAY */
+        .panel {
+            background: rgba(0,0,0,0.9);
+            border: 4px solid white;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="hud" class="hidden">
+        <div>
+            <div>HEALTH</div>
+            <div class="bar-container"><div id="hp-bar" class="bar-fill"></div></div>
+            <div style="margin-top:5px;">NITRO</div>
+            <div class="bar-container"><div id="nitro-bar" class="bar-fill"></div></div>
+        </div>
+        <div id="score-display">
+            SCORE: <span id="score-val">0</span><br>
+            <span id="wanted-level">★ POLICE PURSUIT ★</span>
+        </div>
+    </div>
+
+    <div id="menu-screen" class="screen">
+        <h1>RETRO PURSUIT<br>VENDETTA</h1>
+        <div class="panel">
+            <p>SELECT THEME</p>
+            <button class="theme-btn" onclick="game.setTheme('carland')">CARLAND</button>
+            <button class="theme-btn" onclick="game.setTheme('metro')">METRO</button>
+            <button class="theme-btn" onclick="game.setTheme('desert')">DESERT</button>
+            <br><br>
+            <button onclick="game.showGarage()">GO TO GARAGE</button>
+            <button onclick="game.toggleSettings()">SETTINGS</button>
+        </div>
+    </div>
+
+    <div id="garage-screen" class="screen hidden">
+        <h1>GARAGE</h1>
+        <div class="panel">
+            <button class="car-btn" onclick="game.selectCar(0)">RED RACER<br><span style="font-size:8px; color:#aaa">Fast & Fragile</span></button>
+            <button class="car-btn" onclick="game.selectCar(1)">BLUE CRUISER<br><span style="font-size:8px; color:#aaa">Balanced</span></button>
+            <button class="car-btn" onclick="game.selectCar(2)">GREEN TANK<br><span style="font-size:8px; color:#aaa">Slow & Tough</span></button>
+            <br>
+            <button onclick="game.startGame()">START RACE</button>
+        </div>
+    </div>
+
+    <div id="settings-screen" class="screen hidden">
+        <h1>SETTINGS</h1>
+        <div class="panel">
+            <p>TOUCH CONTROLS</p>
+            <button id="toggle-ctrl-btn" onclick="game.toggleControls()">VISIBLE</button>
+            <br><br>
+            <button onclick="game.closeSettings()">BACK</button>
+        </div>
+    </div>
+
+    <div id="gameover-screen" class="screen hidden">
+        <h1 style="color: red;">CRASHED!</h1>
+        <div class="panel">
+            <p>FINAL SCORE: <span id="final-score">0</span></p>
+            <button onclick="location.reload()">RETRY</button>
+        </div>
+    </div>
+
+    <div id="touch-controls">
+        <div id="btn-left" class="t-btn"></div>
+        <div id="btn-right" class="t-btn"></div>
+        <div id="btn-shoot" class="t-btn"></div>
+        <div id="btn-nitro" class="t-btn"></div>
+    </div>
+</div>
+
+<script>
+/**
+ * RETRO PURSUIT GAME ENGINE
+ * Built with HTML5 Canvas
+ */
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// Configuration
+const GAME_WIDTH = 400; // Internal resolution height scales automatically
+const GAME_HEIGHT = 800;
+let SCALE = 1;
+
+// Resizing
+function resize() {
+    let aspect = window.innerWidth / window.innerHeight;
+    if (window.innerWidth < 600) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    } else {
+        canvas.width = 400; // Fixed width for PC feeling
+        canvas.height = window.innerHeight > 800 ? 800 : window.innerHeight;
+    }
+    SCALE = canvas.width / 400;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Assets & Data
+const THEMES = {
+    carland: { road: '#555', grass: '#2a6', line: '#fff', text: 'CARLAND' },
+    metro: { road: '#222', grass: '#000', line: '#00f3ff', text: 'METRO CITY' },
+    desert: { road: '#654', grass: '#dcb', line: '#fff', text: 'SANDY HILLS' }
+};
+
+const CAR_TYPES = [
+    { name: 'Red Racer', color: '#ff3333', speed: 8, hp: 3, w: 40, h: 70 },
+    { name: 'Blue Cruiser', color: '#3333ff', speed: 6, hp: 5, w: 42, h: 72 },
+    { name: 'Green Tank', color: '#228822', speed: 5, hp: 8, w: 45, h: 75 }
+];
+
+// Input State
+const Input = {
+    left: false,
+    right: false,
+    up: false, // Accelerate/Nitro
+    fire: false
+};
+
+// Keyboard Listeners
+document.addEventListener('keydown', e => {
+    if(e.code === 'ArrowLeft' || e.key === 'a') Input.left = true;
+    if(e.code === 'ArrowRight' || e.key === 'd') Input.right = true;
+    if(e.shiftKey) Input.up = true;
+    if(e.code === 'Space') Input.fire = true;
+});
+document.addEventListener('keyup', e => {
+    if(e.code === 'ArrowLeft' || e.key === 'a') Input.left = false;
+    if(e.code === 'ArrowRight' || e.key === 'd') Input.right = false;
+    if(!e.shiftKey) Input.up = false;
+    if(e.code === 'Space') Input.fire = false;
+});
+
+// Touch Logic
+const setupTouch = (id, key) => {
+    const el = document.getElementById(id);
+    el.addEventListener('touchstart', (e) => { e.preventDefault(); Input[key] = true; });
+    el.addEventListener('touchend', (e) => { e.preventDefault(); Input[key] = false; });
+};
+setupTouch('btn-left', 'left');
+setupTouch('btn-right', 'right');
+setupTouch('btn-nitro', 'up');
+setupTouch('btn-shoot', 'fire');
+
+class Bullet {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.w = 4;
+        this.h = 10;
+        this.speed = 15;
+        this.active = true;
+    }
+    update() {
+        this.y -= this.speed;
+        if(this.y < -20) this.active = false;
+    }
+    draw() {
+        ctx.fillStyle = '#ffaa00';
+        ctx.fillRect(this.x - this.w/2, this.y, this.w, this.h);
+    }
+}
+
+class Particle {
+    constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * 5;
+        this.vy = (Math.random() - 0.5) * 5;
+        this.life = 1.0;
+        this.color = color;
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life -= 0.05;
+    }
+    draw() {
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, 4, 4);
+        ctx.globalAlpha = 1.0;
+    }
+}
+
+class Entity {
+    constructor(x, y, type, speedMod) {
+        this.x = x;
+        this.y = y;
+        this.type = type; // 'civ', 'police', 'player'
+        this.w = 40;
+        this.h = 70;
+        this.speed = (Math.random() * 2 + 2) * speedMod;
+        this.color = this.getColor(type);
+        this.hp = 1;
+        this.active = true;
+        
+        if (type === 'police') {
+            this.speed = 7; // Faster
+            this.hp = 3;
+            this.color = '#111';
+        }
+    }
+
+    getColor(t) {
+        const colors = ['#f0f', '#ff0', '#0ff', '#fff', '#f80'];
+        if (t === 'civ') return colors[Math.floor(Math.random() * colors.length)];
+        return '#000';
+    }
+
+    update(playerSpeed, playerX) {
+        // Relative movement
+        this.y += (this.speed - playerSpeed + 4); 
+
+        // Police Logic
+        if (this.type === 'police') {
+            // Chase logic
+            if (this.x < playerX) this.x += 1;
+            if (this.x > playerX) this.x -= 1;
+            
+            // Siren animation
+            if (Date.now() % 200 < 100) this.color = '#00f';
+            else this.color = '#f00';
+        }
+
+        if (this.y > canvas.height + 100) this.active = false;
+    }
+
+    draw() {
+        ctx.fillStyle = this.color;
+        
+        // Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(this.x - this.w/2 + 5, this.y + 5, this.w, this.h);
+
+        // Body
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x - this.w/2, this.y, this.w, this.h);
+        
+        // Roof
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.fillRect(this.x - this.w/2 + 5, this.y + 15, this.w - 10, this.h - 30);
+        
+        if(this.type === 'police') {
+            // Siren bar
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(this.x - this.w/2 + 10, this.y + 25, this.w - 20, 5);
+        }
+    }
+}
+
+class Game {
+    constructor() {
+        this.theme = THEMES.carland;
+        this.playerCar = CAR_TYPES[1]; // Default
+        this.state = 'MENU';
+        this.controlsVisible = true;
+        
+        this.x = canvas.width / 2;
+        this.y = canvas.height - 150;
+        this.speed = 0;
+        this.nitro = 100;
+        this.hp = 100;
+        this.score = 0;
+        this.wanted = 0; // 0 = safe, 1 = police active
+        
+        this.entities = [];
+        this.bullets = [];
+        this.particles = [];
+        
+        this.roadOffset = 0;
+        this.shake = 0;
+    }
+
+    setTheme(name) {
+        this.theme = THEMES[name];
+        document.querySelectorAll('.theme-btn').forEach(b => b.style.background = '#222');
+        event.target.style.background = '#444';
+    }
+
+    selectCar(index) {
+        this.playerCar = CAR_TYPES[index];
+        this.showMenu(); // Back to main
+    }
+
+    showGarage() {
+        document.getElementById('menu-screen').classList.add('hidden');
+        document.getElementById('garage-screen').classList.remove('hidden');
+    }
+
+    showMenu() {
+        document.getElementById('garage-screen').classList.add('hidden');
+        document.getElementById('menu-screen').classList.remove('hidden');
+    }
+
+    toggleSettings() {
+        document.getElementById('menu-screen').classList.add('hidden');
+        document.getElementById('settings-screen').classList.remove('hidden');
+    }
+
+    closeSettings() {
+        document.getElementById('settings-screen').classList.add('hidden');
+        document.getElementById('menu-screen').classList.remove('hidden');
+    }
+
+    toggleControls() {
+        this.controlsVisible = !this.controlsVisible;
+        document.getElementById('toggle-ctrl-btn').innerText = this.controlsVisible ? "VISIBLE" : "HIDDEN";
+        document.getElementById('touch-controls').style.display = this.controlsVisible ? 'block' : 'none';
+    }
+
+    startGame() {
+        this.state = 'PLAYING';
+        this.hp = this.playerCar.hp * 10; // Scales
+        this.nitro = 100;
+        this.score = 0;
+        this.wanted = 0;
+        this.entities = [];
+        this.bullets = [];
+        this.particles = [];
+        this.x = canvas.width / 2;
+        
+        // UI
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById('hud').classList.remove('hidden');
+        document.getElementById('wanted-level').style.display = 'none';
+        
+        if(this.controlsVisible) document.getElementById('touch-controls').style.display = 'block';
+
+        this.loop();
+    }
+
+    spawnEntity() {
+        let type = 'civ';
+        let lane = Math.random() * (canvas.width - 80) + 40;
+        
+        // Spawn police if wanted
+        if (this.wanted > 0 && Math.random() < 0.3) {
+            type = 'police';
+        }
+
+        this.entities.push(new Entity(lane, -100, type, 1));
+    }
+
+    explode(x, y, color) {
+        for(let i=0; i<10; i++) {
+            this.particles.push(new Particle(x, y, color));
+        }
+        this.shake = 10;
+    }
+
+    loop() {
+        if(this.state !== 'PLAYING') return;
+
+        // Clear
+        ctx.fillStyle = this.theme.grass;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw Road
+        const roadW = canvas.width * 0.8;
+        const roadX = (canvas.width - roadW) / 2;
+        ctx.fillStyle = this.theme.road;
+        ctx.fillRect(roadX, 0, roadW, canvas.height);
+
+        // Screen Shake
+        let shakeX = 0, shakeY = 0;
+        if(this.shake > 0) {
+            shakeX = (Math.random() - 0.5) * this.shake;
+            shakeY = (Math.random() - 0.5) * this.shake;
+            this.shake *= 0.9;
+            if(this.shake < 0.5) this.shake = 0;
+        }
+        ctx.save();
+        ctx.translate(shakeX, shakeY);
+
+        // Moving Lines
+        this.roadOffset += (10 + (Input.up ? 5 : 0));
+        if(this.roadOffset > 40) this.roadOffset = 0;
+        
+        ctx.fillStyle = this.theme.line;
+        for(let i = -40; i < canvas.height; i += 80) {
+            ctx.fillRect(canvas.width/2 - 5, i + this.roadOffset, 10, 40);
+        }
+
+        // Logic
+        if(Input.left) this.x -= 5;
+        if(Input.right) this.x += 5;
+        
+        // Boundries
+        if(this.x < roadX + 20) this.x = roadX + 20;
+        if(this.x > roadX + roadW - 20) this.x = roadX + roadW - 20;
+
+        // Nitro Logic
+        let currentSpeed = 10;
+        if(Input.up && this.nitro > 0) {
+            currentSpeed = 15;
+            this.nitro -= 0.5;
+            // Nitro exhaust
+            this.particles.push(new Particle(this.x, this.y + 40, '#0ff'));
+        } else if (this.nitro < 100) {
+            this.nitro += 0.1;
+        }
+
+        // Shooting
+        if(Input.fire && Math.random() > 0.8) {
+             this.bullets.push(new Bullet(this.x, this.y - 40));
+             Input.fire = false; // Semi-auto feel
+        }
+
+        // Spawning
+        if(Math.random() < 0.02) this.spawnEntity();
+
+        // Updates & Collisions
+        // 1. Bullets
+        this.bullets.forEach((b, bi) => {
+            b.update();
+            b.draw();
+            // Hit check
+            this.entities.forEach((e, ei) => {
+                if (Math.abs(b.x - e.x) < e.w/2 && Math.abs(b.y - e.y) < e.h/2) {
+                    e.hp--;
+                    this.bullets.splice(bi, 1);
+                    this.explode(b.x, b.y, '#fff');
+                    
+                    if(e.hp <= 0) {
+                        this.entities.splice(ei, 1);
+                        this.explode(e.x, e.y, '#f00');
+                        this.score += 100;
+                        if(e.type === 'civ') {
+                            this.wanted = 1; // You shot a civ!
+                            document.getElementById('wanted-level').style.display = 'block';
+                        }
+                    }
+                }
+            });
+        });
+
+        // 2. Entities
+        this.entities.forEach((e, i) => {
+            e.update(currentSpeed, this.x);
+            e.draw();
+
+            // Collision with Player
+            if (Math.abs(this.x - e.x) < (this.playerCar.w/2 + e.w/2 - 10) && 
+                Math.abs(this.y - e.y) < (this.playerCar.h/2 + e.h/2 - 10)) {
+                
+                this.hp -= 10;
+                this.explode(this.x, this.y, '#f90');
+                this.entities.splice(i, 1);
+                this.shake = 20;
+                
+                // Hitting cars calls police
+                this.wanted = 1;
+                document.getElementById('wanted-level').style.display = 'block';
+            }
+
+            if(!e.active) this.entities.splice(i, 1);
+        });
+
+        // 3. Player Draw
+        ctx.fillStyle = this.playerCar.color;
+        // Chassis
+        ctx.fillRect(this.x - this.playerCar.w/2, this.y - this.playerCar.h/2, this.playerCar.w, this.playerCar.h);
+        // Windshield
+        ctx.fillStyle = '#000';
+        ctx.fillRect(this.x - this.playerCar.w/2 + 2, this.y - 10, this.playerCar.w - 4, 15);
+        // Lights
+        ctx.fillStyle = '#ff0'; // headlights
+        ctx.fillRect(this.x - this.playerCar.w/2 + 2, this.y - this.playerCar.h/2, 8, 5);
+        ctx.fillRect(this.x + this.playerCar.w/2 - 10, this.y - this.playerCar.h/2, 8, 5);
+        ctx.fillStyle = '#f00'; // taillights
+        ctx.fillRect(this.x - this.playerCar.w/2 + 2, this.y + this.playerCar.h/2 - 5, 8, 5);
+        ctx.fillRect(this.x + this.playerCar.w/2 - 10, this.y + this.playerCar.h/2 - 5, 8, 5);
+
+        // 4. Particles
+        this.particles.forEach((p, i) => {
+            p.update();
+            p.draw();
+            if(p.life <= 0) this.particles.splice(i, 1);
+        });
+
+        ctx.restore();
+
+        // UI Updates
+        this.score++;
+        document.getElementById('score-val').innerText = this.score;
+        document.getElementById('hp-bar').style.width = (this.hp / (this.playerCar.hp * 10) * 100) + '%';
+        document.getElementById('nitro-bar').style.width = this.nitro + '%';
+
+        // Game Over Check
+        if(this.hp <= 0) {
+            this.state = 'GAMEOVER';
+            document.getElementById('final-score').innerText = this.score;
+            document.getElementById('gameover-screen').classList.remove('hidden');
+            document.getElementById('touch-controls').style.display = 'none';
+        } else {
+            requestAnimationFrame(() => this.loop());
+        }
+    }
+}
+
+const game = new Game();
+
+</script>
+</body>
+</html>
