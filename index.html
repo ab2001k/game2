@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Grand Theft Racer: Wanted</title>
+    <title>High Octane: Pursuit Pro</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pricedown&display=swap'); /* GTA Style Font fallback */
-        
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&display=swap');
+
         body {
             margin: 0;
             overflow: hidden;
-            background-color: #000;
-            font-family: 'Impact', 'Arial Black', sans-serif; /* Aggressive font */
+            background: #000;
+            font-family: 'Orbitron', sans-serif;
             color: white;
             user-select: none;
         }
@@ -19,117 +19,156 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            background: #111;
             display: flex;
             justify-content: center;
             align-items: center;
+            background: #111;
         }
 
         canvas {
-            background: #222;
-            box-shadow: 0 0 50px rgba(0,0,0,1);
-            max-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,243,255,0.2);
+            border: 2px solid #333;
+            background: #000;
         }
 
-        /* UI OVERLAYS */
+        /* --- UI OVERLAYS --- */
         .screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 10;
-            transition: opacity 0.5s;
+            z-index: 20;
+            transition: all 0.4s ease;
         }
 
         .hidden { opacity: 0; pointer-events: none; z-index: -1; }
 
         h1 {
-            font-size: 4rem;
-            color: #fff;
-            text-shadow: 4px 4px 0 #000, -1px -1px 0 #000;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-            font-style: italic;
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: #00f3ff;
+            text-shadow: 0 0 20px #00f3ff;
+            margin-bottom: 10px;
         }
-        
-        h2 { color: #f9b006; font-size: 1.5rem; margin-bottom: 30px; }
 
-        /* SELECTION CARDS */
-        .card-container { display: flex; gap: 20px; }
+        h2 { color: #aaa; font-size: 1.2rem; margin-bottom: 40px; }
 
+        /* CARDS */
+        .selection-grid { display: flex; gap: 30px; }
         .card {
-            background: linear-gradient(145deg, #222, #111);
-            border: 2px solid #444;
-            padding: 20px;
-            width: 200px;
+            background: linear-gradient(180deg, #1a1a1a, #0a0a0a);
+            border: 1px solid #333;
+            padding: 30px;
+            width: 220px;
             text-align: center;
             cursor: pointer;
-            transition: 0.2s;
-            border-radius: 10px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
         }
         .card:hover {
-            border-color: #f9b006;
+            border-color: #00f3ff;
             transform: translateY(-10px);
-            background: #333;
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.2);
         }
-        .card-icon { font-size: 60px; display: block; margin-bottom: 10px; }
-        .card-title { font-size: 20px; color: #fff; font-weight: bold; }
-        .card-desc { font-size: 12px; color: #aaa; margin-top: 5px; }
+        .card:hover h3 { color: #00f3ff; }
+        .card-preview {
+            width: 100%; height: 100px;
+            background: #222;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+        }
 
-        /* HUD */
-        #hud {
+        /* DASHBOARD UI */
+        #dashboard {
             position: absolute;
-            top: 20px; right: 20px;
-            width: 250px;
-            text-align: right;
-            pointer-events: none;
-            display: none;
-        }
-
-        .stat-box { margin-bottom: 10px; }
-        .bar-bg { width: 100%; height: 15px; background: rgba(0,0,0,0.8); border: 2px solid #555; transform: skewX(-20deg); }
-        .bar-fill { height: 100%; transition: width 0.1s; }
-        #hp-bar { background: #2ecc71; width: 100%; }
-        #nitro-bar { background: #3498db; width: 100%; }
-
-        #weapon-ui {
-            font-size: 24px;
-            color: #f9b006;
-            text-shadow: 2px 2px 0 #000;
-        }
-
-        #wasted {
-            position: absolute;
-            font-size: 6rem;
-            color: #c0392b;
-            text-shadow: 4px 4px 0 #000;
-            font-weight: 900;
-            background: rgba(0,0,0,0.5);
-            padding: 20px 100px;
-            border-top: 5px solid #c0392b;
-            border-bottom: 5px solid #c0392b;
-            transform: rotate(-5deg);
-            display: none;
-        }
-
-        /* TUTORIAL */
-        .controls-hint {
-            position: absolute;
-            bottom: 20px; left: 20px;
-            color: rgba(255,255,255,0.6);
-            font-size: 14px;
-            line-height: 1.5;
+            bottom: 0; left: 0; width: 100%;
+            height: 80px;
+            background: linear-gradient(0deg, #111, transparent);
+            display: none; /* Hidden until game starts */
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 20px;
+            gap: 40px;
             pointer-events: none;
         }
-        kbd {
-            background: #333;
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid #666;
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .key-cap {
+            background: #222;
+            border: 1px solid #555;
             color: #fff;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 5px;
+            box-shadow: 0 4px 0 #000;
+            transition: 0.1s;
+        }
+        
+        .key-active {
+            background: #00f3ff;
+            color: #000;
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #000;
+        }
+
+        .hud-label { font-size: 10px; color: #888; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* TOP HUD */
+        #top-hud {
+            position: absolute;
+            top: 20px; left: 20px; right: 20px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            display: none;
+        }
+        
+        .stat-bar-container {
+            width: 200px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #444;
+            height: 10px;
+            margin-top: 5px;
+            transform: skewX(-20deg);
+        }
+        .stat-bar { height: 100%; width: 100%; transition: width 0.1s; }
+        
+        .wanted-stars { color: gold; font-size: 20px; text-shadow: 0 0 10px gold; }
+
+        /* Wasted Screen */
+        #wasted-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(100, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 30;
+        }
+        #wasted-text {
+            font-size: 5rem;
+            color: #fff;
+            background: #000;
+            padding: 10px 40px;
+            transform: rotate(-5deg);
+            border: 4px solid #fff;
+            text-shadow: 4px 4px 0 #555;
         }
 
     </style>
@@ -137,449 +176,538 @@
 <body>
 
 <div id="game-container">
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <canvas id="gameCanvas"></canvas>
 
-    <div id="hud">
-        <div id="weapon-ui">🔫 UZI <span style="font-size:14px; color:#aaa">∞ ammo</span></div>
-        <div class="stat-box">
-            <span style="color:#2ecc71">HEALTH</span>
-            <div class="bar-bg"><div id="hp-bar" class="bar-fill"></div></div>
+    <div id="top-hud">
+        <div>
+            <div class="hud-label">ARMOR INTEGIRTY</div>
+            <div class="stat-bar-container"><div id="hp-bar" class="stat-bar" style="background:#ff3333"></div></div>
         </div>
-        <div class="stat-box">
-            <span style="color:#3498db">NITROUS</span>
-            <div class="bar-bg"><div id="nitro-bar" class="bar-fill"></div></div>
+        <div style="text-align: center;">
+            <div class="hud-label">CURRENT SCORE</div>
+            <div style="font-size: 24px;" id="score-val">0</div>
         </div>
-        <div style="font-size: 30px; color: #fff; margin-top:10px;">
-            $<span id="score-val">0</span>
+        <div style="text-align: right;">
+            <div class="hud-label">NITROUS OXIDE</div>
+            <div class="stat-bar-container"><div id="nitro-bar" class="stat-bar" style="background:#00f3ff"></div></div>
         </div>
-        <div id="wanted-stars" style="color: #f9b006; font-size: 20px;">⭐⭐☆☆☆</div>
     </div>
 
-    <div class="controls-hint" id="hints">
-        <kbd>←</kbd> <kbd>→</kbd> STEER &nbsp; <kbd>SPACE</kbd> SHOOT &nbsp; <kbd>SHIFT</kbd> NITRO
+    <div id="dashboard">
+        <div class="control-group">
+            <div class="key-cap" id="key-left">←</div>
+            <div class="hud-label">STEER LEFT</div>
+        </div>
+        <div class="control-group">
+            <div class="key-cap" id="key-fire" style="border-color: #ff3333">SPACE</div>
+            <div class="hud-label" style="color:#ff3333">WEAPON FIRE</div>
+        </div>
+         <div class="control-group">
+            <div class="key-cap" id="key-nitro" style="border-color: #00f3ff">SHIFT</div>
+            <div class="hud-label" style="color:#00f3ff">NITRO BOOST</div>
+        </div>
+        <div class="control-group">
+            <div class="key-cap" id="key-right">→</div>
+            <div class="hud-label">STEER RIGHT</div>
+        </div>
     </div>
 
     <div id="screen-theme" class="screen">
-        <h1>GRAND THEFT RACER</h1>
-        <h2>SELECT LOCATION</h2>
-        <div class="card-container">
-            <div class="card" onclick="ui.selectTheme('metro')">
-                <div class="card-icon">🌃</div>
-                <div class="card-title">LIBERTY CITY</div>
-                <div class="card-desc">Urban • Night • Police Heavy</div>
+        <h1>Select Sector</h1>
+        <h2>Where will you race?</h2>
+        <div class="selection-grid">
+            <div class="card" onclick="Game.setTheme('metro')">
+                <div class="card-preview" style="background: #111; color: cyan;">🏙️</div>
+                <h3>NEON METRO</h3>
+                <p style="color:#666; font-size: 12px;">High Traffic • Night Mode</p>
             </div>
-            <div class="card" onclick="ui.selectTheme('carland')">
-                <div class="card-icon">🌲</div>
-                <div class="card-title">COUNTRYSIDE</div>
-                <div class="card-desc">Grass • Trees • Fast Roads</div>
+            <div class="card" onclick="Game.setTheme('desert')">
+                <div class="card-preview" style="background: #420; color: orange;">🏜️</div>
+                <h3>DUST BOWL</h3>
+                <p style="color:#666; font-size: 12px;">Low Vis • Offroad</p>
             </div>
-            <div class="card" onclick="ui.selectTheme('desert')">
-                <div class="card-icon">🌵</div>
-                <div class="card-title">SANDY SHORES</div>
-                <div class="card-desc">Desert • Dust • Offroad</div>
+            <div class="card" onclick="Game.setTheme('carland')">
+                <div class="card-preview" style="background: #131; color: lime;">🌲</div>
+                <h3>GREEN HILLS</h3>
+                <p style="color:#666; font-size: 12px;">Balanced • Scenic</p>
             </div>
         </div>
     </div>
 
     <div id="screen-car" class="screen hidden">
-        <h1>CHOOSE YOUR RIDE</h1>
-        <h2>SELECT VEHICLE</h2>
-        <div class="card-container">
-            <div class="card" onclick="ui.selectCar('sport')">
-                <div class="card-icon">🏎️</div>
-                <div class="card-title">CHEETAH</div>
-                <div class="card-desc">Speed: High<br>Armor: Low</div>
+        <h1>Select Vehicle</h1>
+        <h2>Choose your weapon</h2>
+        <div class="selection-grid">
+            <div class="card" onclick="Game.setCar('racer')">
+                <div class="card-preview" style="background: #222; color: #ff3333;">🏎️</div>
+                <h3>INTERCEPTOR</h3>
+                <p style="color:#666; font-size: 12px;">Speed: A+ | Armor: C</p>
             </div>
-            <div class="card" onclick="ui.selectCar('muscle')">
-                <div class="card-icon">🚗</div>
-                <div class="card-title">STALLION</div>
-                <div class="card-desc">Speed: Med<br>Armor: Med</div>
+            <div class="card" onclick="Game.setCar('muscle')">
+                <div class="card-preview" style="background: #222; color: #3333ff;">🚙</div>
+                <h3>ENFORCER</h3>
+                <p style="color:#666; font-size: 12px;">Speed: B | Armor: B</p>
             </div>
-            <div class="card" onclick="ui.selectCar('tank')">
-                <div class="card-icon">🚙</div>
-                <div class="card-title">PATRIOT</div>
-                <div class="card-desc">Speed: Low<br>Armor: High</div>
+            <div class="card" onclick="Game.setCar('tank')">
+                <div class="card-preview" style="background: #222; color: #228822;">🚐</div>
+                <h3>JUGGERNAUT</h3>
+                <p style="color:#666; font-size: 12px;">Speed: C | Armor: A+</p>
             </div>
         </div>
     </div>
 
-    <div id="wasted">WASTED</div>
-
-    <div id="screen-gameover" class="screen hidden">
-        <h1 style="color: #c0392b">BUSTED</h1>
-        <p>FINAL CASH: $<span id="final-score">0</span></p>
-        <button class="card" style="width:auto" onclick="location.reload()">RESPAWN</button>
+    <div id="wasted-overlay">
+        <div id="wasted-text">WASTED</div>
+        <h3 style="margin-top:20px">SCORE: <span id="final-score">0</span></h3>
+        <button class="key-cap" style="margin-top:20px; cursor:pointer;" onclick="location.reload()">TRY AGAIN</button>
     </div>
+
 </div>
 
 <script>
-/* --- GAME ENGINE --- */
+/**
+ * PROFESSIONAL RENDERER ENGINE
+ * Uses Procedural drawing (Canvas API) instead of images/emojis
+ */
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// --- ASSETS & CONFIG ---
+// --- RESIZE LOGIC ---
+function resize() {
+    canvas.width = 800; // Fixed Internal Resolution
+    canvas.height = 600;
+}
+resize();
+
+// --- CONFIGURATION ---
 const THEMES = {
-    metro: { bg: '#1a1a1a', road: '#333', line: '#f9b006', text: '#fff', decor: ['🏢', '🏨', '🏦'], civs: ['🚕', '🚙', '🚐'] },
-    carland: { bg: '#2ecc71', road: '#555', line: '#fff', text: '#fff', decor: ['🌲', '🌳', '🏡'], civs: ['🚗', '🛻', '🚜'] },
-    desert: { bg: '#e67e22', road: '#7f8c8d', line: '#fff', text: '#000', decor: ['🌵', '🏜️', '🪨'], civs: ['🚍', '🚔', '🚐'] }
+    metro: { 
+        road: '#222', grass: '#050505', lane: '#00f3ff', 
+        objFn: 'drawBuilding', density: 0.05,
+        sky: '#000'
+    },
+    desert: { 
+        road: '#654', grass: '#dcb', lane: '#fff', 
+        objFn: 'drawCactus', density: 0.03,
+        sky: '#a50'
+    },
+    carland: { 
+        road: '#555', grass: '#282', lane: '#fff', 
+        objFn: 'drawTree', density: 0.08,
+        sky: '#4af'
+    }
 };
 
 const CARS = {
-    sport: { sprite: '🏎️', speed: 9, hp: 50 },
-    muscle: { sprite: '🚗', speed: 7, hp: 80 },
-    tank: { sprite: '🚙', speed: 6, hp: 120 }
+    racer: { color: '#ff3333', speed: 12, hp: 60, w: 40, h: 70 },
+    muscle: { color: '#3333ff', speed: 9, hp: 100, w: 44, h: 74 },
+    tank: { color: '#228822', speed: 7, hp: 150, w: 50, h: 80 }
 };
 
-// --- GAME STATE ---
-const Game = {
-    state: 'MENU',
-    theme: null,
-    car: null,
-    width: 800,
-    height: 600,
-    frames: 0,
-    speed: 0,
-    baseSpeed: 0,
-    
-    player: { x: 400, y: 500, hp: 100, maxHp: 100, nitro: 100, w: 40, h: 70 },
-    
-    entities: [],
-    bullets: [],
-    particles: [],
-    decors: [],
-    
-    score: 0,
-    wantedLevel: 1,
-
-    init() {
-        this.loop = this.loop.bind(this);
-        requestAnimationFrame(this.loop);
-    },
-
-    start() {
-        this.state = 'PLAYING';
-        this.player.hp = this.car.hp;
-        this.player.maxHp = this.car.hp;
-        this.player.nitro = 100;
-        this.score = 0;
-        this.baseSpeed = this.car.speed;
-        this.speed = 0;
-        this.entities = [];
-        this.bullets = [];
-        
-        document.getElementById('hud').style.display = 'block';
-    }
-};
-
-// --- INPUT ---
+// --- INPUT SYSTEM ---
 const Input = { left: false, right: false, up: false, fire: false };
-window.addEventListener('keydown', e => {
-    if(e.key === 'ArrowLeft' || e.key === 'a') Input.left = true;
-    if(e.key === 'ArrowRight' || e.key === 'd') Input.right = true;
-    if(e.key === 'Shift') Input.up = true;
-    if(e.key === ' ' || e.key === 'Control') Input.fire = true;
-});
-window.addEventListener('keyup', e => {
-    if(e.key === 'ArrowLeft' || e.key === 'a') Input.left = false;
-    if(e.key === 'ArrowRight' || e.key === 'd') Input.right = false;
-    if(e.key === 'Shift') Input.up = false;
-    if(e.key === ' ' || e.key === 'Control') Input.fire = false;
+
+document.addEventListener('keydown', e => {
+    if(e.key === 'ArrowLeft') { Input.left = true; highlight('key-left', true); }
+    if(e.key === 'ArrowRight') { Input.right = true; highlight('key-right', true); }
+    if(e.key === 'Shift') { Input.up = true; highlight('key-nitro', true); }
+    if(e.code === 'Space') { Input.fire = true; highlight('key-fire', true); }
 });
 
-// --- CLASSES ---
-class Entity {
-    constructor(type) {
-        this.type = type; // 'civ', 'police', 'pickup'
-        this.x = Math.random() * 380 + 210; // Road bounds
-        this.y = -100;
-        this.w = 40; 
-        this.h = 70;
-        this.markedForDelete = false;
+document.addEventListener('keyup', e => {
+    if(e.key === 'ArrowLeft') { Input.left = false; highlight('key-left', false); }
+    if(e.key === 'ArrowRight') { Input.right = false; highlight('key-right', false); }
+    if(e.key === 'Shift') { Input.up = false; highlight('key-nitro', false); }
+    if(e.code === 'Space') { Input.fire = false; highlight('key-fire', false); }
+});
 
-        if (type === 'police') {
-            this.sprite = '🚓';
-            this.speed = Game.baseSpeed + 2; // Faster than base
-            this.hp = 3;
-            this.aggro = true;
-        } else if (type === 'pickup') {
-            this.sprite = '❤️';
-            this.w = 30; this.h = 30;
-            this.speed = 0; // Stationary relative to road
-            this.hp = 1;
-        } else {
-            // Civilian
-            const civs = Game.theme.civs;
-            this.sprite = civs[Math.floor(Math.random() * civs.length)];
-            this.speed = Game.baseSpeed - 2; // Slower
-            this.hp = 1;
-        }
-    }
+function highlight(id, active) {
+    const el = document.getElementById(id);
+    if(active) el.classList.add('key-active');
+    else el.classList.remove('key-active');
+}
 
-    update() {
-        // Move relative to player speed
-        const relSpeed = (this.speed - Game.speed); 
-        this.y += (5 - relSpeed); // Items move down screen
-
-        // Police AI
-        if (this.type === 'police' && this.y > 0 && this.y < Game.player.y) {
-            if (this.x < Game.player.x) this.x += 1;
-            else this.x -= 1;
-            
-            // Siren visual
-            if (Game.frames % 10 === 0) this.siren = !this.siren;
-        }
-
-        if (this.y > Game.height + 50) this.markedForDelete = true;
-    }
-
-    draw() {
-        ctx.font = "40px Arial";
-        ctx.textAlign = "center";
+// --- ARTIST (PROCEDURAL DRAWING) ---
+const Artist = {
+    drawCar(ctx, x, y, type, color, angle = 0) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        
+        const w = 40, h = 70; // Standard sizes
         
         // Shadow
-        ctx.fillStyle = "rgba(0,0,0,0.5)";
-        ctx.fillText(this.sprite, this.x + 5, this.y + 35); // offset shadow
-        
-        // Sprite
-        if (this.type === 'police' && this.siren) {
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = "red";
-        }
-        ctx.fillText(this.sprite, this.x, this.y + 30);
-        ctx.shadowBlur = 0;
-    }
-}
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(-w/2 + 5, -h/2 + 5, w, h);
 
-class Bullet {
-    constructor(x, y) {
-        this.x = x; this.y = y;
-        this.markedForDelete = false;
-    }
-    update() {
-        this.y -= 20; // Fast bullet
-        if (this.y < -50) this.markedForDelete = true;
-    }
-    draw() {
-        ctx.fillStyle = "#ffeb3b";
-        ctx.fillRect(this.x - 2, this.y, 4, 15);
-    }
-}
+        // Tires
+        ctx.fillStyle = '#111';
+        ctx.fillRect(-w/2-2, -h/2+5, 4, 12); // FL
+        ctx.fillRect(w/2-2, -h/2+5, 4, 12); // FR
+        ctx.fillRect(-w/2-2, h/2-17, 4, 12); // RL
+        ctx.fillRect(w/2-2, h/2-17, 4, 12); // RR
 
-class Decor {
-    constructor() {
-        this.side = Math.random() > 0.5 ? 'left' : 'right';
-        this.x = this.side === 'left' ? Math.random() * 150 : Math.random() * 150 + 600;
-        this.y = -50;
-        this.sprite = Game.theme.decor[Math.floor(Math.random() * Game.theme.decor.length)];
-    }
-    update() {
-        this.y += Game.speed * 2; // Parallax effect
-        if(this.y > Game.height) this.markedForDelete = true;
-    }
-    draw() {
-        ctx.font = "50px Arial";
-        ctx.textAlign = "center";
-        ctx.fillStyle = "rgba(0,0,0,0.2)"; // Shadow
-        ctx.fillText(this.sprite, this.x+5, this.y+5);
-        ctx.fillStyle = "white"; // Reset
-        ctx.fillText(this.sprite, this.x, this.y);
-    }
-}
-
-// --- LOGIC LOOP ---
-Game.loop = function() {
-    if (this.state === 'PLAYING') {
-        this.frames++;
-        
-        // 1. Logic
-        // Steering
-        if (Input.left) this.player.x -= 7;
-        if (Input.right) this.player.x += 7;
-        
-        // Speed/Nitro
-        let targetSpeed = this.baseSpeed;
-        if (Input.up && this.player.nitro > 0) {
-            targetSpeed += 10;
-            this.player.nitro -= 1;
-        } else if (this.player.nitro < 100) {
-            this.player.nitro += 0.1;
-        }
-        // Smooth accel
-        this.speed += (targetSpeed - this.speed) * 0.1;
-        
-        // Boundaries
-        if (this.player.x < 200) this.player.x = 200; // Left rail
-        if (this.player.x > 600) this.player.x = 600; // Right rail
-
-        // Shooting
-        if (Input.fire && this.frames % 10 === 0) {
-            this.bullets.push(new Bullet(this.player.x, this.player.y - 40));
-        }
-
-        // Spawning
-        if (Math.random() < 0.02) this.entities.push(new Entity(Math.random() < 0.05 ? 'pickup' : 'civ'));
-        if (Math.random() < 0.005) this.entities.push(new Entity('police'));
-        if (Math.random() < 0.1) this.decors.push(new Decor());
-
-        // Update Arrays
-        this.bullets.forEach(b => b.update());
-        this.entities.forEach(e => e.update());
-        this.decors.forEach(d => d.update());
-
-        // Collisions
-        // Bullets hitting Enemies
-        this.bullets.forEach(b => {
-            this.entities.forEach(e => {
-                if (e.type !== 'pickup' && Math.abs(b.x - e.x) < 30 && Math.abs(b.y - e.y) < 40) {
-                    e.hp--;
-                    b.markedForDelete = true;
-                    if (e.hp <= 0) {
-                        e.markedForDelete = true;
-                        this.score += e.type === 'police' ? 500 : 100;
-                        // Boom effect (simple flash)
-                        ctx.fillStyle = "white";
-                        ctx.fillRect(0,0,Game.width, Game.height);
-                    }
-                }
-            });
-        });
-
-        // Player hitting Entities
-        this.entities.forEach(e => {
-            if (Math.abs(this.player.x - e.x) < 30 && Math.abs(this.player.y - e.y) < 60) {
-                if (e.type === 'pickup') {
-                    this.player.hp = Math.min(this.player.maxHp, this.player.hp + 30);
-                    e.markedForDelete = true;
-                    this.score += 50;
-                } else {
-                    // Crash
-                    this.player.hp -= 10;
-                    e.hp--;
-                    // Bounce
-                    if(this.player.x < e.x) this.player.x -= 20; else this.player.x += 20;
-                    
-                    if(e.hp <= 0) e.markedForDelete = true;
-                }
-            }
-        });
-
-        // Cleanup
-        this.bullets = this.bullets.filter(b => !b.markedForDelete);
-        this.entities = this.entities.filter(e => !e.markedForDelete);
-        this.decors = this.decors.filter(d => !d.markedForDelete);
-
-        // Game Over
-        if (this.player.hp <= 0) {
-            this.gameOver();
-        }
-
-        this.score++;
-    }
-
-    this.draw();
-    requestAnimationFrame(this.loop);
-};
-
-// --- DRAWING ---
-Game.draw = function() {
-    // Background
-    if (this.state === 'PLAYING') {
-        ctx.fillStyle = this.theme.bg;
-        ctx.fillRect(0, 0, this.width, this.height);
-
-        // Draw Road
-        const roadW = 440;
-        const roadX = (this.width - roadW) / 2;
-        ctx.fillStyle = this.theme.road;
-        ctx.fillRect(roadX, 0, roadW, this.height);
-        
-        // Road Lines (Moving)
-        ctx.setLineDash([40, 40]);
-        ctx.lineDashOffset = -this.frames * this.speed;
-        ctx.strokeStyle = this.theme.line;
-        ctx.lineWidth = 5;
+        // Body Chassis
+        ctx.fillStyle = color;
+        // Main block
         ctx.beginPath();
-        ctx.moveTo(this.width/2, 0);
-        ctx.lineTo(this.width/2, this.height);
-        ctx.stroke();
-        ctx.setLineDash([]); // reset
-
-        // Draw Decor (Below cars)
-        this.decors.forEach(d => d.draw());
-
-        // Draw Entities
-        this.entities.forEach(e => e.draw());
-
-        // Draw Player
-        ctx.font = "50px Arial";
-        ctx.textAlign = "center";
-        // Player Shadow
-        ctx.fillStyle = "rgba(0,0,0,0.5)";
-        ctx.fillText(this.car.sprite, this.player.x + 5, this.player.y + 35);
-        // Player Sprite
-        ctx.fillText(this.car.sprite, this.player.x, this.player.y + 30);
-        
-        // Muzzle Flash
-        if (Input.fire && this.frames % 5 === 0) {
-            ctx.fillStyle = "yellow";
-            ctx.beginPath();
-            ctx.arc(this.player.x, this.player.y - 40, 10, 0, Math.PI*2);
+        if(type === 'police') {
+            ctx.fillStyle = '#111';
+            ctx.roundRect(-w/2, -h/2, w, h, 2);
+            ctx.fill();
+            // White doors
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(-w/2+1, -10, w-2, 30);
+        } else {
+            ctx.roundRect(-w/2, -h/2, w, h, 4);
             ctx.fill();
         }
 
-        // Draw Bullets
-        this.bullets.forEach(b => b.draw());
+        // Roof/Windshield area
+        ctx.fillStyle = '#222'; // Dark glass
+        ctx.beginPath();
+        ctx.moveTo(-w/2 + 4, -h/2 + 15);
+        ctx.lineTo(w/2 - 4, -h/2 + 15);
+        ctx.lineTo(w/2 - 5, h/2 - 10);
+        ctx.lineTo(-w/2 + 5, h/2 - 10);
+        ctx.fill();
 
-        // Update UI
-        document.getElementById('score-val').innerText = this.score;
-        document.getElementById('hp-bar').style.width = (this.player.hp / this.player.maxHp * 100) + "%";
-        document.getElementById('nitro-bar').style.width = this.player.nitro + "%";
+        // Roof Top
+        ctx.fillStyle = color;
+        if(type === 'police') ctx.fillStyle = '#fff';
+        ctx.fillRect(-w/2 + 6, -5, w - 12, 25);
+
+        // Lights
+        // Headlights
+        ctx.fillStyle = '#ffeda0';
+        ctx.shadowBlur = 5; ctx.shadowColor = '#ffeda0';
+        ctx.fillRect(-w/2 + 3, -h/2, 6, 4);
+        ctx.fillRect(w/2 - 9, -h/2, 6, 4);
+        ctx.shadowBlur = 0;
+
+        // Taillights
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(-w/2 + 3, h/2 - 2, 6, 2);
+        ctx.fillRect(w/2 - 9, h/2 - 2, 6, 2);
+
+        // Spoiler (Sport only)
+        if(type === 'sport' || type === 'racer') {
+            ctx.fillStyle = '#000'; // Carbon fiber look
+            ctx.fillRect(-w/2, h/2 - 8, w, 4);
+        }
+
+        // Police Siren
+        if(type === 'police') {
+            const blink = Date.now() % 200 > 100;
+            ctx.fillStyle = blink ? '#f00' : '#00f';
+            ctx.fillRect(-10, -2, 8, 4);
+            ctx.fillStyle = blink ? '#00f' : '#f00';
+            ctx.fillRect(2, -2, 8, 4);
+            
+            // Siren Glow
+            ctx.globalAlpha = 0.3;
+            ctx.fillStyle = blink ? '#f00' : '#00f';
+            ctx.beginPath(); ctx.arc(0,0, 40, 0, Math.PI*2); ctx.fill();
+            ctx.globalAlpha = 1;
+        }
+
+        ctx.restore();
+    },
+
+    drawTree(ctx, x, y) {
+        // Simple vector tree
+        ctx.fillStyle = '#420'; // Trunk
+        ctx.fillRect(x-4, y, 8, 15);
+        ctx.fillStyle = '#161'; // Leaves
+        ctx.beginPath();
+        ctx.arc(x, y-10, 15, 0, Math.PI*2);
+        ctx.fill();
+        // Highlight
+        ctx.fillStyle = '#282';
+        ctx.beginPath(); ctx.arc(x-5, y-15, 8, 0, Math.PI*2); ctx.fill();
+    },
+
+    drawCactus(ctx, x, y) {
+        ctx.fillStyle = '#262';
+        ctx.beginPath();
+        ctx.roundRect(x-4, y-20, 8, 30, 4); // Main
+        ctx.roundRect(x-12, y-10, 8, 5, 2); // Left arm
+        ctx.roundRect(x-12, y-15, 4, 10, 2);
+        ctx.fill();
+    },
+
+    drawBuilding(ctx, x, y) {
+        // Skyscraper top-down/iso fake view
+        ctx.fillStyle = '#080808';
+        ctx.fillRect(x-20, y-50, 40, 60);
         
-        // Wanted stars
-        let stars = "⭐";
-        if (this.score > 1000) stars += "⭐";
-        if (this.score > 2000) stars += "⭐";
-        if (this.score > 5000) stars += "⭐";
-        if (this.score > 10000) stars += "⭐";
-        document.getElementById('wanted-stars').innerText = stars;
-
-    } else {
-        // Menu Background
-        ctx.fillStyle = "#111";
-        ctx.fillRect(0, 0, this.width, this.height);
+        // Windows
+        ctx.fillStyle = '#333';
+        if(Math.random() > 0.5) ctx.fillStyle = '#550'; // Lights on
+        ctx.fillRect(x-15, y-40, 8, 8);
+        ctx.fillRect(x+5, y-40, 8, 8);
+        ctx.fillRect(x-15, y-20, 8, 8);
     }
 };
 
-Game.gameOver = function() {
-    this.state = 'GAMEOVER';
-    const wasted = document.getElementById('wasted');
-    wasted.style.display = 'block';
+// --- GAME LOGIC ---
+const Game = {
+    theme: null,
+    carConfig: null,
+    active: false,
+    frames: 0,
     
-    // Slow down effect then show menu
-    setTimeout(() => {
-        wasted.style.display = 'none';
-        document.getElementById('screen-gameover').classList.remove('hidden');
-        document.getElementById('final-score').innerText = this.score;
-        document.getElementById('hud').style.display = 'none';
-    }, 2000);
-};
+    // Physics State
+    player: { x: 400, y: 500, speed: 0, maxSpeed: 10, hp: 100, nitro: 100 },
+    roadOffset: 0,
+    
+    entities: [], // Cars
+    scenery: [],  // Trees/Buildings
+    bullets: [],
+    particles: [],
 
-// --- UI HANDLERS ---
-const ui = {
-    selectTheme(name) {
-        Game.theme = THEMES[name];
+    setTheme(name) {
+        this.theme = THEMES[name];
         document.getElementById('screen-theme').classList.add('hidden');
         document.getElementById('screen-car').classList.remove('hidden');
     },
-    selectCar(type) {
-        Game.car = CARS[type];
+
+    setCar(name) {
+        this.carConfig = CARS[name];
+        this.player.maxSpeed = this.carConfig.speed * 1.5;
+        this.player.hp = this.carConfig.hp;
+        this.player.maxHp = this.carConfig.hp; // Store max for bar calculation
         document.getElementById('screen-car').classList.add('hidden');
-        Game.start();
+        this.start();
+    },
+
+    start() {
+        this.active = true;
+        this.player.speed = 0;
+        document.getElementById('top-hud').style.display = 'flex';
+        document.getElementById('dashboard').style.display = 'flex';
+        this.score = 0;
+        this.loop();
+    },
+
+    update() {
+        this.frames++;
+        const p = this.player;
+
+        // 1. Controls & Physics
+        if(Input.left) p.x -= 6;
+        if(Input.right) p.x += 6;
+        
+        // Clamp Road
+        if(p.x < 210) p.x = 210;
+        if(p.x > 590) p.x = 590;
+
+        // Speed Logic
+        let targetSpeed = 8;
+        if(Input.up && p.nitro > 0) {
+            targetSpeed = 16; // Boost
+            p.nitro -= 0.5;
+            this.createParticles(p.x, p.y + 40, 2, '#00f3ff'); // Nitro flame
+        } else {
+            if(p.nitro < 100) p.nitro += 0.05; // Regen
+        }
+        
+        // Smooth Acceleration
+        p.speed += (targetSpeed - p.speed) * 0.05;
+
+        // 2. Road Movement (Parallax)
+        this.roadOffset += p.speed * 2;
+        if(this.roadOffset > 100) this.roadOffset = 0;
+
+        // 3. Spawning
+        // Traffic
+        if(Math.random() < 0.02) {
+            const lane = 250 + Math.random() * 300;
+            const type = Math.random() < 0.2 ? 'police' : 'civ';
+            const enemySpeed = type === 'police' ? 10 : 5 + Math.random() * 2;
+            this.entities.push({
+                x: lane, y: -100,
+                type: type,
+                speed: enemySpeed,
+                color: type === 'police' ? '#fff' : `hsl(${Math.random()*360}, 60%, 50%)`,
+                hp: type === 'police' ? 60 : 20,
+                w: 40, h: 70
+            });
+        }
+
+        // Scenery
+        if(Math.random() < this.theme.density) {
+            const side = Math.random() > 0.5;
+            const x = side ? Math.random() * 180 : 620 + Math.random() * 180;
+            this.scenery.push({ x: x, y: -50, fn: this.theme.objFn });
+        }
+
+        // Shooting
+        if(Input.fire && this.frames % 8 === 0) {
+            this.bullets.push({ x: p.x - 15, y: p.y - 20 });
+            this.bullets.push({ x: p.x + 15, y: p.y - 20 });
+        }
+
+        // 4. Update Arrays
+        // Scenery moves purely by player speed (static objects)
+        this.scenery.forEach(s => s.y += p.speed * 2);
+
+        // Entities move by RELATIVE speed
+        this.entities.forEach(e => {
+            // Formula: Enemy moves down if Player > Enemy Speed
+            // Enemy moves UP if Enemy Speed > Player (e.g. Police chasing)
+            
+            let relSpeed = (e.speed - p.speed) * 2; // Multiplier for visual feel
+            
+            // Police AI: Chase
+            if(e.type === 'police') {
+                if(e.y < p.y) e.y += (e.speed + 2 - p.speed); // Catch up logic
+                else e.y -= 2; // Don't pass player too easily
+                
+                // Steer towards player
+                if(e.y > 0 && Math.abs(e.y - p.y) < 400) {
+                    if(e.x < p.x) e.x += 1;
+                    else e.x -= 1;
+                }
+            } else {
+                // Civilians just drive forward
+                e.y -= relSpeed; // Standard relative motion
+            }
+        });
+
+        this.bullets.forEach(b => b.y -= 20);
+        
+        this.particles.forEach(pt => {
+            pt.x += pt.vx; pt.y += pt.vy; pt.life -= 0.1;
+        });
+
+        // 5. Collision & Cleanup
+        this.bullets = this.bullets.filter(b => {
+            if(b.y < 0) return false;
+            let hit = false;
+            this.entities.forEach(e => {
+                if(!hit && Math.abs(b.x - e.x) < 20 && Math.abs(b.y - e.y) < 35) {
+                    e.hp -= 10;
+                    hit = true;
+                    this.createParticles(b.x, b.y, 3, '#ffff00'); // Spark
+                    if(e.hp <= 0) {
+                         this.score += e.type === 'police' ? 500 : 100;
+                         this.createParticles(e.x, e.y, 15, '#ff5500'); // Explosion
+                         e.dead = true;
+                    }
+                }
+            });
+            return !hit;
+        });
+
+        this.entities = this.entities.filter(e => {
+            if(e.dead) return false;
+            
+            // Player Crash
+            if(Math.abs(p.x - e.x) < (40) && Math.abs(p.y - e.y) < (70)) {
+                p.hp -= 2;
+                e.hp -= 2;
+                this.createParticles((p.x+e.x)/2, (p.y+e.y)/2, 2, '#fff');
+                // Bounce
+                if(p.x < e.x) p.x -= 2; else p.x += 2;
+            }
+            
+            return e.y < 800 && e.y > -200;
+        });
+        
+        this.scenery = this.scenery.filter(s => s.y < 800);
+        this.particles = this.particles.filter(p => p.life > 0);
+
+        // Check Death
+        if(p.hp <= 0) this.gameOver();
+        
+        this.score++;
+    },
+
+    draw() {
+        // Clear
+        ctx.fillStyle = this.theme.grass;
+        ctx.fillRect(0,0, canvas.width, canvas.height);
+
+        // Road
+        ctx.fillStyle = this.theme.road;
+        ctx.fillRect(200, 0, 400, 600);
+        
+        // Rumble Strips
+        const stripH = 40;
+        for(let i=-stripH; i<600; i+=stripH) {
+            let offsetI = i + this.roadOffset;
+            if(offsetI > 600) offsetI -= 600 + stripH;
+            
+            let color = (Math.floor((i + this.roadOffset)/stripH) % 2 === 0) ? '#fff' : '#f00';
+            ctx.fillStyle = color;
+            ctx.fillRect(190, offsetI, 10, stripH);
+            ctx.fillRect(600, offsetI, 10, stripH);
+        }
+
+        // Lanes
+        ctx.fillStyle = this.theme.lane;
+        for(let i=0; i<600; i+=80) {
+            let y = (i + this.roadOffset) % 600;
+            ctx.fillRect(395, y, 10, 30);
+        }
+
+        // Draw Scenery (Behind cars)
+        this.scenery.forEach(s => Artist[s.fn](ctx, s.x, s.y));
+
+        // Draw Entities
+        this.entities.forEach(e => {
+            Artist.drawCar(ctx, e.x, e.y, e.type, e.color);
+        });
+
+        // Draw Bullets
+        ctx.fillStyle = '#ff0';
+        this.bullets.forEach(b => ctx.fillRect(b.x-2, b.y, 4, 10));
+
+        // Draw Player
+        Artist.drawCar(ctx, this.player.x, this.player.y, 'racer', this.carConfig.color);
+
+        // Particles
+        this.particles.forEach(p => {
+            ctx.globalAlpha = p.life;
+            ctx.fillStyle = p.c;
+            ctx.fillRect(p.x, p.y, p.s, p.s);
+            ctx.globalAlpha = 1;
+        });
+
+        // UI Updates
+        document.getElementById('score-val').innerText = this.score;
+        document.getElementById('hp-bar').style.width = (this.player.hp / this.player.maxHp * 100) + '%';
+        document.getElementById('nitro-bar').style.width = this.player.nitro + '%';
+    },
+
+    loop() {
+        if(!this.active) return;
+        this.update();
+        this.draw();
+        requestAnimationFrame(() => this.loop());
+    },
+
+    createParticles(x, y, count, color) {
+        for(let i=0; i<count; i++) {
+            this.particles.push({
+                x: x, y: y,
+                vx: (Math.random()-0.5)*10,
+                vy: (Math.random()-0.5)*10,
+                life: 1.0,
+                c: color,
+                s: Math.random() * 5 + 2
+            });
+        }
+    },
+
+    gameOver() {
+        this.active = false;
+        document.getElementById('wasted-overlay').style.display = 'flex';
+        document.getElementById('final-score').innerText = this.score;
     }
 };
-
-// Start Loop
-Game.init();
 
 </script>
 </body>
