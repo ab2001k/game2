@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Grand Theft Racer: Remastered</title>
+    <title>Grand Theft Racer: Final Stable</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M10 50 L20 30 L80 30 L90 50 L90 70 L10 70 Z' fill='crimson' stroke='white' stroke-width='3'/><circle cx='30' cy='50' r='5' fill='white'/><circle cx='70' cy='50' r='5' fill='white'/></svg>">
     
@@ -21,82 +21,60 @@
         }
 
         canvas {
-            box-shadow: 0 0 80px rgba(0,0,0,0.8); 
-            border-left: 5px solid #222; border-right: 5px solid #222;
+            box-shadow: 0 0 50px #000; border-left: 5px solid #222; border-right: 5px solid #222;
             background: #050505; max-width: 100%; max-height: 100%;
-            z-index: 5;
         }
 
-        /* UI SCREENS - IMPROVED BACKGROUNDS */
+        /* SCREENS & UI */
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column;
+            background: rgba(0,0,0,0.92); display: flex; flex-direction: column;
             justify-content: center; align-items: center; z-index: 20; transition: opacity 0.3s;
-            
-            /* Cinematic Background */
-            background: 
-                linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9)),
-                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 800 600" preserveAspectRatio="none"><defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="%23200940"/><stop offset="100%" stop-color="%232c3e50"/></linearGradient></defs><rect width="100%" height="100%" fill="url(%23g)"/><path d="M0 600 L100 450 L150 600 M200 600 L300 400 L400 600 M500 600 L600 350 L700 600" fill="%23111" opacity="0.5"/></svg>');
-            background-size: cover;
         }
-        
         .hidden { opacity: 0; pointer-events: none; z-index: -1; }
 
-        h1 { 
-            color: #f9b006; font-size: 3.5rem; text-transform: uppercase; 
-            margin-bottom: 20px; text-shadow: 4px 4px 0px #000, 0 0 20px #f9b006;
-            background: rgba(0,0,0,0.5); padding: 10px 20px; border: 2px solid #f9b006;
-        }
+        h1 { color: #f9b006; font-size: 3rem; text-transform: uppercase; margin-bottom: 20px; text-shadow: 0 0 15px #f9b006; }
 
         /* HUD */
         #top-hud {
             position: absolute; top: 10px; left: 10px; right: 10px;
             display: none; justify-content: space-between; pointer-events: none; z-index: 15;
-            text-shadow: 2px 2px 0 #000;
+            text-shadow: 1px 1px 0 #000;
         }
-        .hud-box { 
-            background: rgba(0, 0, 0, 0.8); padding: 8px 20px; 
-            border-radius: 4px; border: 2px solid #444; min-width: 90px; text-align: center;
-            box-shadow: 0 4px 0 #000;
-        }
-        .bar-wrap { width: 120px; height: 10px; background: #222; margin-top: 5px; transform: skewX(-20deg); border: 1px solid #fff; }
+        .hud-box { background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 4px; border: 1px solid #444; min-width: 80px; text-align: center; }
+        .bar-wrap { width: 120px; height: 8px; background: #333; margin-top: 5px; transform: skewX(-20deg); border: 1px solid #fff; }
         .bar-fill { height: 100%; width: 100%; transition: width 0.1s; }
 
         /* CARDS */
         .selection-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
         .card {
-            background: linear-gradient(145deg, #222, #111); 
-            border: 2px solid #555; padding: 25px; width: 160px;
+            background: #1a1a1a; border: 2px solid #444; padding: 20px; width: 160px;
             text-align: center; cursor: pointer; transition: 0.2s; margin: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
-        .card:hover { border-color: #f9b006; transform: translateY(-5px) scale(1.05); background: #333; }
-        .card-icon { font-size: 40px; margin-bottom: 10px; text-shadow: 0 0 10px currentColor; }
+        .card:hover { border-color: #f9b006; transform: scale(1.05); background: #222; }
 
         /* GLOBAL SETTINGS BUTTON */
         #settings-btn {
-            position: absolute; top: 90px; right: 20px; font-size: 26px; cursor: pointer; z-index: 101;
-            color: #fff; background: rgba(0,0,0,0.8); padding: 10px; border: 2px solid #555; border-radius: 5px;
+            position: absolute; top: 80px; right: 20px; font-size: 26px; cursor: pointer; z-index: 101;
+            color: #fff; background: rgba(0,0,0,0.6); padding: 10px; border: 2px solid #555; border-radius: 5px;
             transition: 0.2s;
         }
-        #settings-btn:hover { border-color: #f9b006; color: #f9b006; box-shadow: 0 0 10px #f9b006; }
+        #settings-btn:hover { border-color: #f9b006; color: #f9b006; }
 
         /* PAUSE MODAL */
         #settings-modal {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 102; justify-content: center; align-items: center;
-            backdrop-filter: blur(5px);
         }
         .pause-box {
             background: #222; border: 3px solid #f9b006; padding: 30px; width: 300px; text-align: center;
-            box-shadow: 0 0 40px rgba(249, 176, 6, 0.2);
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
         }
         .btn-opt {
             width: 100%; padding: 12px; margin-bottom: 10px; background: #333; color: #fff;
             border: 1px solid #777; font-family: 'Orbitron', sans-serif; cursor: pointer; font-size: 14px;
-            transition: 0.2s;
         }
-        .btn-opt:hover { background: #fff; color: #000; border-color: #fff; }
+        .btn-opt:hover { background: #444; border-color: #fff; }
 
         /* MOBILE & WASTED */
         #mobile-controls {
@@ -109,13 +87,11 @@
             border-radius: 50%; pointer-events: auto; display: flex; justify-content: center; align-items: center;
             font-size: 24px; color: #fff; backdrop-filter: blur(2px);
         }
-        .m-btn:active { background: rgba(255,255,255,0.3); transform: scale(0.95); }
 
         #wasted-screen { background: rgba(180, 0, 0, 0.85); display: none; z-index: 100; }
         #busted-text {
             font-size: 5rem; color: #fff; background: #2980b9; padding: 10px 50px;
             transform: rotate(-3deg); border: 5px solid #fff; text-shadow: 5px 5px 0 #000;
-            box-shadow: 10px 10px 0 rgba(0,0,0,0.5);
         }
         #ammo-count { color: #f1c40f; font-size: 20px; font-weight: bold; }
     </style>
@@ -160,38 +136,23 @@
     <div id="screen-theme" class="screen">
         <h1>Grand Theft Racer</h1>
         <div class="selection-grid">
-            <div class="card" onclick="Game.setTheme('metro')">
-                <div class="card-icon" style="color:#00f3ff">🌃</div>
-                <div>METRO</div>
-            </div>
-            <div class="card" onclick="Game.setTheme('desert')">
-                <div class="card-icon" style="color:#e67e22">🏜️</div>
-                <div>DESERT</div>
-            </div>
-            <div class="card" onclick="Game.setTheme('jungle')">
-                <div class="card-icon" style="color:#2ecc71">🌲</div>
-                <div>JUNGLE</div>
-            </div>
+            <div class="card" onclick="Game.setTheme('metro')">🏙️ METRO</div>
+            <div class="card" onclick="Game.setTheme('desert')">🏜️ DESERT</div>
+            <div class="card" onclick="Game.setTheme('jungle')">🌲 JUNGLE</div>
         </div>
     </div>
 
     <div id="screen-car" class="screen hidden">
         <h1>Select Vehicle</h1>
         <div class="selection-grid">
-            <div class="card" onclick="Game.setCar('racer')">
-                <div class="card-icon" style="color:#e74c3c">🏎️</div>
-                <div>SPEEDSTER</div>
-            </div>
-            <div class="card" onclick="Game.setCar('tank')">
-                <div class="card-icon" style="color:#27ae60">🚙</div>
-                <div>ENFORCER</div>
-            </div>
+            <div class="card" onclick="Game.setCar('racer')">🏎️ SPEEDSTER</div>
+            <div class="card" onclick="Game.setCar('tank')">🚙 ENFORCER</div>
         </div>
     </div>
 
     <div id="wasted-screen" class="screen">
         <div id="busted-text">WASTED</div>
-        <p style="font-size: 24px; color:#fff; margin-top:20px;">STOLEN: $<span id="final-score">0</span></p>
+        <p style="font-size: 24px; color:#fff">STOLEN: $<span id="final-score">0</span></p>
         <p class="blink" style="margin-top: 30px; color: #f9b006;">PRESS [SPACE] TO RESPAWN</p>
     </div>
 
@@ -204,8 +165,6 @@
 </div>
 
 <script>
-/** * AUDIO SYSTEM 
- */
 const AudioSys = {
     ctx: null, enabled: true,
     init() { if(!this.ctx) this.ctx = new (window.AudioContext||window.webkitAudioContext)(); },
@@ -227,16 +186,12 @@ const AudioSys = {
     }
 };
 
-/**
- * GAME ENGINE
- */
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const GW = 800, GH = 600;
 function resize(){ canvas.width=GW; canvas.height=GH; }
 resize();
 
-// THEMES CONFIGURATION
 const THEMES = {
     metro: { road: '#222', grass: '#151515', lane: '#00f3ff', decor: 'build', density: 0.05 },
     desert: { road: '#654', grass: '#cba', lane: '#fff', decor: 'cactus', density: 0.03 },
@@ -247,7 +202,6 @@ const CARS = {
     tank: { color: '#27ae60', speed: 9, hp: 150, w: 50, h: 80 }
 };
 
-// INPUT HANDLING
 const Input = { left:false, right:false, up:false, fire:false };
 window.addEventListener('keydown', e => {
     AudioSys.init();
@@ -271,15 +225,11 @@ const bindTouch=(id,k)=>{
 };
 bindTouch('m-left','left'); bindTouch('m-right','right'); bindTouch('m-nitro','up'); bindTouch('m-fire','fire');
 
-/**
- * RENDERER
- */
 const Artist = {
     drawCar(ctx, x, y, type, color, w, h, hp) {
         if(isNaN(x) || isNaN(y)) return; 
         ctx.save(); ctx.translate(x, y);
         
-        // Police Lights Cone
         if(type==='police') {
              const blink = Date.now()%300 < 150;
              if(blink) {
@@ -294,7 +244,6 @@ const Artist = {
         ctx.fillStyle = color; if(type==='police') ctx.fillStyle='#fff';
         ctx.beginPath(); ctx.roundRect(-w/2, -h/2, w, h, 4); ctx.fill();
         
-        // Damage Smoke
         if(hp < 20) { ctx.fillStyle = 'rgba(100,100,100,0.6)'; ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI*2); ctx.fill(); }
 
         ctx.fillStyle='#111'; ctx.fillRect(-w/2+4,-h/2+15,w-8,15); ctx.fillRect(-w/2+4,h/2-25,w-8,10);
@@ -324,14 +273,12 @@ const Artist = {
         ctx.fillStyle='#f00'; ctx.fillRect(-25, -70, 50, 5); ctx.fillStyle='#0f0'; ctx.fillRect(-25, -70, (hp/30)*50, 5); 
         ctx.restore();
     },
-    // NEW: Billboard Drawing
     drawBillboard(ctx, x, y) {
         ctx.save(); ctx.translate(x, y);
-        ctx.fillStyle = '#555'; ctx.fillRect(-2, 0, 4, 60); // Pole
-        ctx.fillStyle = '#333'; ctx.fillRect(-40, -40, 80, 40); // Board
-        ctx.fillStyle = '#fff'; ctx.fillRect(-35, -35, 70, 30); // Screen
+        ctx.fillStyle = '#555'; ctx.fillRect(-2, 0, 4, 60); 
+        ctx.fillStyle = '#333'; ctx.fillRect(-40, -40, 80, 40); 
+        ctx.fillStyle = '#fff'; ctx.fillRect(-35, -35, 70, 30); 
         ctx.fillStyle = '#000'; ctx.font = '10px Arial'; ctx.textAlign = 'center';
-        
         const slogans = ["OBEY", "BUY", "SPEED", "RACE"];
         const text = slogans[Math.floor(x % slogans.length)]; 
         ctx.fillText(text, 0, -15);
@@ -339,13 +286,10 @@ const Artist = {
     }
 };
 
-/**
- * LOGIC CORE
- */
 const Game = {
     state: 'MENU', paused: false, theme: null, car: null,
     player: { x:400, y:500, hp:100, maxHp:100, nitro:100, speed:0, w:40, h:70, ammo:60 },
-    score: 0, roadOffset: 0, crimeLevel: 0, policeKilled: 0,
+    score: 0, roadOffset: 0, crimeLevel: 0, policeKilled: 0, lastTime: 0,
     heli: { active:false, x:400, y:-150, hp:30, timer:0 },
     entities: [], bullets: [], scenery: [], particles: [], envObjects: [], texts: [],
 
@@ -357,6 +301,8 @@ const Game = {
         let tch = localStorage.getItem('gtr_touch');
         if(snd === 'off') { AudioSys.enabled=false; document.getElementById('btn-sound').innerText='SOUND: OFF'; }
         if(tch === 'on') { document.getElementById('btn-touch').innerText='TOUCH: ON'; document.getElementById('mobile-controls').style.display='block'; }
+        this.lastTime = performance.now();
+        requestAnimationFrame(t => this.loop(t));
     },
 
     restart(){
@@ -368,14 +314,13 @@ const Game = {
         document.getElementById('screen-car').classList.add('hidden');
         document.getElementById('wasted-screen').style.display='none';
         document.getElementById('top-hud').style.display='flex';
-        this.loop();
     },
 
     toggleSettings(){
         const m = document.getElementById('settings-modal');
         if(m.style.display === 'flex') {
             m.style.display = 'none';
-            if(this.state === 'PAUSED') { this.state = 'PLAYING'; this.paused = false; this.loop(); }
+            if(this.state === 'PAUSED') { this.state = 'PLAYING'; this.paused = false; }
         } else {
             m.style.display = 'flex';
             if(this.state === 'PLAYING') { this.state = 'PAUSED'; this.paused = true; }
@@ -386,51 +331,51 @@ const Game = {
 
     spawnText(str, x, y, color) { this.texts.push({str, x, y, color:color||'#fff', life:1.0}); },
 
-    update() {
+    update(dt) {
         if(this.paused) return;
         const p = this.player;
 
-        // --- PHYSICS SAFETY CHECK (Prevents Vanishing) ---
+        // Anti-Vanish Check
         if(isNaN(p.x)) p.x = 400;
         if(isNaN(p.speed)) p.speed = 0;
-        if(isNaN(p.hp)) p.hp = 100;
 
-        // CONTROLS & BOUNDARY
-        if(Input.left) p.x -= 6; if(Input.right) p.x += 6;
-        p.x = Math.max(35, Math.min(765, p.x)); // Hard clamp
+        // CONTROLS 
+        if(Input.left) p.x -= 300 * dt; if(Input.right) p.x += 300 * dt;
+        p.x = Math.max(35, Math.min(765, p.x)); // Boundary
 
         let targetSpeed = 4; 
-        if(Input.up && p.nitro > 0) { targetSpeed = 22; p.nitro -= 0.5; if(Math.random()<0.1) AudioSys.play('nitro'); } 
-        else { if(p.nitro<100) p.nitro+=0.1; }
+        if(Input.up && p.nitro > 0) { targetSpeed = 22; p.nitro -= 20 * dt; if(Math.random()<0.1) AudioSys.play('nitro'); } 
+        else { if(p.nitro<100) p.nitro += 5 * dt; }
         
-        p.speed += (targetSpeed - p.speed) * 0.1;
-        this.roadOffset = (this.roadOffset + p.speed * 2) % 100;
+        p.speed += (targetSpeed - p.speed) * 2 * dt;
+        this.roadOffset = (this.roadOffset + p.speed * 100 * dt) % 100;
 
         // HELICOPTER
         if(this.policeKilled >= 4 && !this.heli.active) { this.heli.active=true; this.heli.hp=30; this.spawnText("CHOPPER INBOUND!", 400, 300, 'red'); }
         if(this.heli.active) {
-            let dx = p.x - this.heli.x; this.heli.x += dx * 0.05; this.heli.y = 120 + Math.sin(Date.now()/500)*20;
+            let dx = p.x - this.heli.x; this.heli.x += dx * 2 * dt; this.heli.y = 120 + Math.sin(Date.now()/500)*20;
             if(Math.random()<0.05) AudioSys.play('heli');
-            this.heli.timer++;
-            if(this.heli.timer > 120 && this.heli.timer % 10 === 0) AudioSys.play('warn');
-            if(this.heli.timer > 180) {
+            this.heli.timer += dt;
+            if(this.heli.timer > 2 && this.heli.timer < 3) {
+                 if(Math.random() < 0.2) AudioSys.play('warn');
+            }
+            if(this.heli.timer > 3) {
                  this.entities.push({x:this.heli.x, y:this.heli.y, type:'missile', speed: p.speed+12, w:10, h:20, targetX: p.x});
                  this.heli.timer = 0;
             }
         }
 
         // SPAWNING - SCENERY
-        if(Math.random() < 0.05) { 
+        if(Math.random() < 2 * dt) { 
             let side = Math.random()>0.5; let dx = side ? Math.random()*150 : 650+Math.random()*150; 
             let type = this.theme.decor;
-            // Add Billboards occasionally
             if(Math.random() < 0.1) type = 'billboard';
             this.scenery.push({x:dx, y:-50, type:type});
         }
-        if(Math.random() < 0.005) this.envObjects.push({y:-50, type:'zebra'});
+        if(Math.random() < 0.5 * dt) this.envObjects.push({y:-50, type:'zebra'});
         
         // SPAWNING - TRAFFIC
-        if(Math.random() < 0.02) {
+        if(Math.random() < 1 * dt) {
             let x = 220 + Math.random() * 360;
             if(!this.entities.some(e=>Math.abs(e.x-x)<60 && Math.abs(e.y+100)<100)) {
                 let type = 'civ';
@@ -451,7 +396,7 @@ const Game = {
         }
         
         // SPAWNING - PEDS
-        if(Math.random() < 0.02) {
+        if(Math.random() < 1 * dt) {
             let isZebra = this.envObjects.some(e => e.type === 'zebra' && e.y < 100 && e.y > -50);
             let spawnType = isZebra ? 'cross' : 'walk';
             let skin = ['#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#f1c40f'][Math.floor(Math.random()*5)];
@@ -461,9 +406,8 @@ const Game = {
                 this.entities.push({x:px, y:-50, type:'ped', speed:1, w:15, h:15, hp:1, vx:0, vy: 1, shirt:skin});
             } else if (spawnType === 'cross') {
                 let startX = (px < 400) ? 190 : 610;
-                this.entities.push({x:startX, y:-50, type:'ped', speed:1, w:15, h:15, hp:1, vx:(startX<400?2:-2), vy:0, shirt:skin});
+                this.entities.push({x:startX, y:-50, type:'ped', speed:1, w:15, h:15, hp:1, vx:(startX<400?50:-50), vy:0, shirt:skin});
             }
-            
             if(Math.random() < 0.05) {
                  this.entities.push({x:px, y:-50, type:'ped_cop', speed:1, w:15, h:15, hp:1, vx:0, vy:1, shirt:'#11f'});
             }
@@ -476,35 +420,35 @@ const Game = {
         }
 
         // UPDATE ENTITIES
-        this.scenery.forEach(s => s.y += p.speed * 2);
-        this.envObjects.forEach(e => e.y += p.speed * 2);
+        this.scenery.forEach(s => s.y += p.speed * 50 * dt);
+        this.envObjects.forEach(e => e.y += p.speed * 50 * dt);
 
         this.entities.forEach(e => {
             if(e.type === 'missile') { 
                 e.y += 15; 
-                if(e.targetX) { let diff = e.targetX - e.x; e.x += diff * 0.02; } 
+                if(e.targetX) { let diff = e.targetX - e.x; e.x += diff * 2 * dt; } 
             }
             else if (e.type.includes('ped')) { 
-                e.y += (p.speed * 2); 
-                e.x += e.vx; 
-                if(e.vy) e.y += e.vy; 
+                e.y += (p.speed * 50 * dt); 
+                e.x += e.vx * dt; 
+                if(e.vy) e.y += e.vy * 50 * dt; 
             }
             else {
                 let relSpeed = (p.speed - e.speed);
-                e.y += relSpeed * 2;
-                e.x += e.vx; e.vx *= 0.95;
+                e.y += relSpeed * 50 * dt;
+                e.x += e.vx * dt; e.vx *= 0.9;
 
                 if(e.type === 'police' && this.crimeLevel > 0) {
-                     if(e.y < p.y) e.y += 2.5; 
-                     else e.y -= 1; 
-                     if(Math.abs(e.y - p.y) < 300) { if(e.x < p.x) e.x++; else e.x--; } 
+                     if(e.y < p.y) e.y += 100 * dt; 
+                     else e.y -= 50 * dt; 
+                     if(Math.abs(e.y - p.y) < 300) { if(e.x < p.x) e.x += 100 * dt; else e.x -= 100 * dt; } 
                 }
             }
         });
 
-        this.bullets.forEach(b => b.y -= 20);
-        this.particles.forEach(pt => { pt.x+=pt.vx; pt.y+=pt.vy; pt.life-=0.1; });
-        this.texts.forEach(t => { t.y -= 1; t.life -= 0.02; });
+        this.bullets.forEach(b => b.y -= 1000 * dt);
+        this.particles.forEach(pt => { pt.x+=pt.vx; pt.y+=pt.vy; pt.life-=2 * dt; });
+        this.texts.forEach(t => { t.y -= 50 * dt; t.life -= 1 * dt; });
 
         // COLLISIONS
         this.entities.forEach(e => {
@@ -524,7 +468,7 @@ const Game = {
                 else {
                     AudioSys.play('crash');
                     this.crimeLevel = Math.max(1, this.crimeLevel);
-                    if(Math.abs(p.x - e.x) > 30) { e.vx = (p.x < e.x) ? 15 : -15; p.hp -= 2; e.hp -= 10; } 
+                    if(Math.abs(p.x - e.x) > 30) { e.vx = (p.x < e.x) ? 300 : -300; p.hp -= 2; e.hp -= 10; } 
                     else { p.hp -= 5; e.hp -= 15; p.speed *= 0.5; if(p.y > e.y) e.y -= 40; else e.y += 40; this.spawnPart((p.x+e.x)/2, (p.y+e.y)/2, '#ccc', 5); }
                     if(e.hp<=0) { e.dead=true; this.spawnPart(e.x,e.y,'orange',20); if(e.type==='police') this.policeKilled++; }
                 }
@@ -546,6 +490,7 @@ const Game = {
             return !hit && b.y > -50;
         });
 
+        // Cleanup
         this.entities = this.entities.filter(e => !e.dead && e.y < 1200 && e.y > -200);
         this.scenery = this.scenery.filter(s => s.y < 1200);
         this.envObjects = this.envObjects.filter(e => e.y < 1200);
@@ -584,7 +529,7 @@ const Game = {
 
         if(this.heli.active) {
             Artist.drawHeli(ctx, this.heli.x, this.heli.y, this.heli.hp);
-            if(this.heli.timer > 120 && this.heli.timer % 10 < 5) {
+            if(this.heli.timer > 2 && this.heli.timer < 3) {
                 ctx.strokeStyle='red'; ctx.lineWidth=3; 
                 ctx.beginPath(); ctx.moveTo(this.heli.x, this.heli.y); ctx.lineTo(this.player.x, this.player.y); ctx.stroke();
             }
@@ -606,18 +551,20 @@ const Game = {
         if(busted) AudioSys.play('busted');
     },
 
-    loop() { 
+    loop(timestamp) { 
+        const dt = (timestamp - this.lastTime) / 1000;
+        this.lastTime = timestamp;
+
         if(this.state==='PLAYING') { 
             try {
-                this.update(); 
+                this.update(dt || 0.016); 
                 this.draw(); 
             } catch (e) {
-                console.error("Game Loop Error:", e);
-                // Simple recovery
+                console.log("Recovering from error...", e);
                 this.player.x = 400; this.player.speed = 0;
             }
         } 
-        requestAnimationFrame(()=>this.loop()); 
+        requestAnimationFrame(t => this.loop(t)); 
     }
 };
 
