@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Grand Theft Racer: Final Stable</title>
+    <title>Grand Theft Racer: Visual Upgrade</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M10 50 L20 30 L80 30 L90 50 L90 70 L10 70 Z' fill='crimson' stroke='white' stroke-width='3'/><circle cx='30' cy='50' r='5' fill='white'/><circle cx='70' cy='50' r='5' fill='white'/></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M10 50 L20 30 L80 30 L90 50 L90 70 L10 70 Z' fill='crimson' stroke='white' stroke-width='3'/><rect x='40' y='10' width='20' height='20' fill='gold'/></svg>">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&display=swap');
@@ -21,19 +21,34 @@
         }
 
         canvas {
-            box-shadow: 0 0 50px #000; border-left: 5px solid #222; border-right: 5px solid #222;
-            background: #050505; max-width: 100%; max-height: 100%;
+            box-shadow: 0 0 80px rgba(0,0,0,0.8); 
+            border-left: 5px solid #222; border-right: 5px solid #222;
+            background: #050505; max-width: 100%; max-height: 100%; z-index: 5;
         }
 
-        /* SCREENS & UI */
+        /* --- VISUAL BACKGROUNDS --- */
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.92); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 20; transition: opacity 0.3s;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 20; transition: opacity 0.3s;
+            /* Retro City Background */
+            background: linear-gradient(to bottom, #200f21 0%, #381534 50%, #0d0d0d 50%, #111 100%);
         }
+        
+        /* Sun/Moon Decor */
+        .screen::after {
+            content: ''; position: absolute; top: 10%; width: 200px; height: 200px;
+            background: linear-gradient(to bottom, #f9b006, #e74c3c);
+            border-radius: 50%; z-index: -1; box-shadow: 0 0 50px #e74c3c;
+        }
+
         .hidden { opacity: 0; pointer-events: none; z-index: -1; }
 
-        h1 { color: #f9b006; font-size: 3rem; text-transform: uppercase; margin-bottom: 20px; text-shadow: 0 0 15px #f9b006; }
+        h1 { 
+            color: #f9b006; font-size: 3rem; text-transform: uppercase; margin-bottom: 20px;
+            text-shadow: 4px 4px 0 #000; letter-spacing: 5px;
+            background: rgba(0,0,0,0.6); padding: 10px 20px; border: 2px solid #f9b006;
+        }
 
         /* HUD */
         #top-hud {
@@ -41,42 +56,42 @@
             display: none; justify-content: space-between; pointer-events: none; z-index: 15;
             text-shadow: 1px 1px 0 #000;
         }
-        .hud-box { background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 4px; border: 1px solid #444; min-width: 80px; text-align: center; }
+        .hud-box { background: rgba(0,0,0,0.8); padding: 5px 15px; border-radius: 4px; border: 1px solid #444; min-width: 80px; text-align: center; }
         .bar-wrap { width: 120px; height: 8px; background: #333; margin-top: 5px; transform: skewX(-20deg); border: 1px solid #fff; }
         .bar-fill { height: 100%; width: 100%; transition: width 0.1s; }
 
         /* CARDS */
-        .selection-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .selection-grid { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; z-index: 2; }
         .card {
-            background: #1a1a1a; border: 2px solid #444; padding: 20px; width: 160px;
+            background: linear-gradient(145deg, #1a1a1a, #000); border: 2px solid #444; padding: 20px; width: 160px;
             text-align: center; cursor: pointer; transition: 0.2s; margin: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
-        .card:hover { border-color: #f9b006; transform: scale(1.05); background: #222; }
+        .card:hover { border-color: #f9b006; transform: translateY(-5px) scale(1.05); background: #222; }
 
-        /* GLOBAL SETTINGS BUTTON */
+        /* SETTINGS BTN */
         #settings-btn {
-            position: absolute; top: 80px; right: 20px; font-size: 26px; cursor: pointer; z-index: 101;
-            color: #fff; background: rgba(0,0,0,0.6); padding: 10px; border: 2px solid #555; border-radius: 5px;
-            transition: 0.2s;
+            position: absolute; top: 90px; right: 20px; font-size: 24px; cursor: pointer; z-index: 101;
+            color: #fff; background: rgba(0,0,0,0.7); padding: 10px; border: 2px solid #555; border-radius: 5px;
         }
-        #settings-btn:hover { border-color: #f9b006; color: #f9b006; }
+        #settings-btn:hover { color: #f9b006; border-color: #f9b006; }
 
         /* PAUSE MODAL */
         #settings-modal {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 102; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.95); z-index: 102; justify-content: center; align-items: center;
         }
         .pause-box {
-            background: #222; border: 3px solid #f9b006; padding: 30px; width: 300px; text-align: center;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            background: #111; border: 2px solid #f9b006; padding: 30px; width: 300px; text-align: center;
+            box-shadow: 0 0 30px rgba(249, 176, 6, 0.2);
         }
         .btn-opt {
             width: 100%; padding: 12px; margin-bottom: 10px; background: #333; color: #fff;
             border: 1px solid #777; font-family: 'Orbitron', sans-serif; cursor: pointer; font-size: 14px;
         }
-        .btn-opt:hover { background: #444; border-color: #fff; }
+        .btn-opt:hover { background: #fff; color: #000; }
 
-        /* MOBILE & WASTED */
+        /* MOBILE CONTROLS */
         #mobile-controls {
             position: absolute; bottom: 20px; left: 0; width: 100%; height: 160px;
             display: none; pointer-events: none; z-index: 30;
@@ -87,11 +102,13 @@
             border-radius: 50%; pointer-events: auto; display: flex; justify-content: center; align-items: center;
             font-size: 24px; color: #fff; backdrop-filter: blur(2px);
         }
+        .m-btn:active { background: rgba(255,255,255,0.3); transform: scale(0.95); }
 
-        #wasted-screen { background: rgba(180, 0, 0, 0.85); display: none; z-index: 100; }
+        #wasted-screen { background: rgba(180, 0, 0, 0.9); display: none; z-index: 100; }
         #busted-text {
             font-size: 5rem; color: #fff; background: #2980b9; padding: 10px 50px;
             transform: rotate(-3deg); border: 5px solid #fff; text-shadow: 5px 5px 0 #000;
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.5);
         }
         #ammo-count { color: #f1c40f; font-size: 20px; font-weight: bold; }
     </style>
@@ -136,23 +153,33 @@
     <div id="screen-theme" class="screen">
         <h1>Grand Theft Racer</h1>
         <div class="selection-grid">
-            <div class="card" onclick="Game.setTheme('metro')">🏙️ METRO</div>
-            <div class="card" onclick="Game.setTheme('desert')">🏜️ DESERT</div>
-            <div class="card" onclick="Game.setTheme('jungle')">🌲 JUNGLE</div>
+            <div class="card" onclick="Game.setTheme('metro')">
+                <div class="card-icon" style="color:#00f3ff">🌃</div>METRO
+            </div>
+            <div class="card" onclick="Game.setTheme('desert')">
+                <div class="card-icon" style="color:#e67e22">🏜️</div>DESERT
+            </div>
+            <div class="card" onclick="Game.setTheme('jungle')">
+                <div class="card-icon" style="color:#2ecc71">🌲</div>JUNGLE
+            </div>
         </div>
     </div>
 
     <div id="screen-car" class="screen hidden">
         <h1>Select Vehicle</h1>
         <div class="selection-grid">
-            <div class="card" onclick="Game.setCar('racer')">🏎️ SPEEDSTER</div>
-            <div class="card" onclick="Game.setCar('tank')">🚙 ENFORCER</div>
+            <div class="card" onclick="Game.setCar('racer')">
+                <div class="card-icon" style="color:#e74c3c">🏎️</div>SPEEDSTER
+            </div>
+            <div class="card" onclick="Game.setCar('tank')">
+                <div class="card-icon" style="color:#27ae60">🚙</div>ENFORCER
+            </div>
         </div>
     </div>
 
     <div id="wasted-screen" class="screen">
         <div id="busted-text">WASTED</div>
-        <p style="font-size: 24px; color:#fff">STOLEN: $<span id="final-score">0</span></p>
+        <p style="font-size: 24px; color:#fff; margin-top:20px">STOLEN: $<span id="final-score">0</span></p>
         <p class="blink" style="margin-top: 30px; color: #f9b006;">PRESS [SPACE] TO RESPAWN</p>
     </div>
 
@@ -283,6 +310,21 @@ const Artist = {
         const text = slogans[Math.floor(x % slogans.length)]; 
         ctx.fillText(text, 0, -15);
         ctx.restore();
+    },
+    drawAmmo(ctx, x, y) {
+        ctx.save(); ctx.translate(x, y);
+        ctx.fillStyle='#f1c40f'; ctx.fillRect(-10, -10, 20, 20); 
+        ctx.fillStyle='#000'; ctx.font='bold 14px Arial'; ctx.textAlign='center';
+        ctx.fillText('A', 0, 5);
+        ctx.restore();
+    },
+    drawBundle(ctx, x, y) {
+        ctx.save(); ctx.translate(x, y);
+        ctx.fillStyle='#27ae60'; ctx.fillRect(-12, -6, 24, 12); 
+        ctx.fillStyle='#2ecc71'; ctx.fillRect(-3, -6, 6, 12);
+        ctx.fillStyle='#fff'; ctx.font='10px Arial'; ctx.textAlign='center';
+        ctx.fillText('$', 0, 4);
+        ctx.restore();
     }
 };
 
@@ -348,7 +390,10 @@ const Game = {
         else { if(p.nitro<100) p.nitro += 5 * dt; }
         
         p.speed += (targetSpeed - p.speed) * 2 * dt;
-        this.roadOffset = (this.roadOffset + p.speed * 100 * dt) % 100;
+        
+        // SYNC: Everything moves by moveDist
+        let moveDist = p.speed * 50 * dt;
+        this.roadOffset = (this.roadOffset + moveDist * 2) % 100;
 
         // HELICOPTER
         if(this.policeKilled >= 4 && !this.heli.active) { this.heli.active=true; this.heli.hp=30; this.spawnText("CHOPPER INBOUND!", 400, 300, 'red'); }
@@ -379,9 +424,10 @@ const Game = {
             let x = 220 + Math.random() * 360;
             if(!this.entities.some(e=>Math.abs(e.x-x)<60 && Math.abs(e.y+100)<100)) {
                 let type = 'civ';
-                if(this.crimeLevel > 0 && Math.random() < 0.4) type='police';
-                if(Math.random()<0.06) type='ammo';
-                if(Math.random()<0.03) type='bundle';
+                // Higher Spawn rates for Cash/Ammo
+                if(Math.random() < 0.1) type='ammo';
+                else if(Math.random() < 0.1) type='bundle';
+                else if(this.crimeLevel > 0 && Math.random() < 0.4) type='police';
 
                 let spd = 3;
                 if(type === 'police') spd = 7;
@@ -408,8 +454,11 @@ const Game = {
                 let startX = (px < 400) ? 190 : 610;
                 this.entities.push({x:startX, y:-50, type:'ped', speed:1, w:15, h:15, hp:1, vx:(startX<400?50:-50), vy:0, shirt:skin});
             }
+            // Police officer on sidewalk
             if(Math.random() < 0.05) {
-                 this.entities.push({x:px, y:-50, type:'ped_cop', speed:1, w:15, h:15, hp:1, vx:0, vy:1, shirt:'#11f'});
+                 // Stationary patrol or slow walk
+                 let vY = Math.random() > 0.5 ? 0 : 1; 
+                 this.entities.push({x:px, y:-50, type:'ped_cop', speed:1, w:15, h:15, hp:1, vx:0, vy:vY, shirt:'#11f'});
             }
         }
 
@@ -420,8 +469,8 @@ const Game = {
         }
 
         // UPDATE ENTITIES
-        this.scenery.forEach(s => s.y += p.speed * 50 * dt);
-        this.envObjects.forEach(e => e.y += p.speed * 50 * dt);
+        this.scenery.forEach(s => s.y += moveDist);
+        this.envObjects.forEach(e => e.y += moveDist);
 
         this.entities.forEach(e => {
             if(e.type === 'missile') { 
@@ -429,19 +478,28 @@ const Game = {
                 if(e.targetX) { let diff = e.targetX - e.x; e.x += diff * 2 * dt; } 
             }
             else if (e.type.includes('ped')) { 
-                e.y += (p.speed * 50 * dt); 
+                e.y += moveDist; 
                 e.x += e.vx * dt; 
                 if(e.vy) e.y += e.vy * 50 * dt; 
             }
             else {
+                // Car Movement
                 let relSpeed = (p.speed - e.speed);
                 e.y += relSpeed * 50 * dt;
                 e.x += e.vx * dt; e.vx *= 0.9;
 
+                // POLICE BLOCKING AI
                 if(e.type === 'police' && this.crimeLevel > 0) {
-                     if(e.y < p.y) e.y += 100 * dt; 
-                     else e.y -= 50 * dt; 
-                     if(Math.abs(e.y - p.y) < 300) { if(e.x < p.x) e.x += 100 * dt; else e.x -= 100 * dt; } 
+                     if(e.y < p.y) {
+                         // Ahead: Try to Block
+                         if(e.x < p.x) e.x += 80 * dt; else e.x -= 80 * dt;
+                         // Match speed to stay ahead
+                         e.y += 20 * dt; 
+                     } else {
+                         // Behind: Ram
+                         e.y -= 80 * dt; // Move UP screen towards player
+                         if(Math.abs(e.y - p.y) < 300) { if(e.x < p.x) e.x += 100 * dt; else e.x -= 100 * dt; } 
+                     }
                 }
             }
         });
@@ -468,8 +526,18 @@ const Game = {
                 else {
                     AudioSys.play('crash');
                     this.crimeLevel = Math.max(1, this.crimeLevel);
-                    if(Math.abs(p.x - e.x) > 30) { e.vx = (p.x < e.x) ? 300 : -300; p.hp -= 2; e.hp -= 10; } 
-                    else { p.hp -= 5; e.hp -= 15; p.speed *= 0.5; if(p.y > e.y) e.y -= 40; else e.y += 40; this.spawnPart((p.x+e.x)/2, (p.y+e.y)/2, '#ccc', 5); }
+                    // Side Collision (Knockback)
+                    if(Math.abs(p.x - e.x) > 30) { 
+                        e.vx = (p.x < e.x) ? 400 : -400; // Strong Push
+                        p.hp -= 2; e.hp -= 10; 
+                    } 
+                    else { 
+                        // Rear Collision
+                        p.hp -= 5; e.hp -= 15; 
+                        p.speed *= 0.5; // Slow down
+                        if(p.y > e.y) e.y -= 40; else e.y += 40; 
+                        this.spawnPart((p.x+e.x)/2, (p.y+e.y)/2, '#ccc', 5); 
+                    }
                     if(e.hp<=0) { e.dead=true; this.spawnPart(e.x,e.y,'orange',20); if(e.type==='police') this.policeKilled++; }
                 }
             }
@@ -520,7 +588,7 @@ const Game = {
         });
 
         this.entities.forEach(e => {
-            if(e.type==='bundle') Artist.drawCar(ctx, e.x, e.y, 'bundle', '#2ecc71', 20, 10);
+            if(e.type==='bundle') Artist.drawBundle(ctx, e.x, e.y);
             else if(e.type==='ammo') Artist.drawAmmo(ctx, e.x, e.y);
             else if(e.type==='missile') { ctx.fillStyle='#fff'; ctx.fillRect(e.x-5,e.y,10,20); }
             else if(e.type.includes('ped')) Artist.drawPed(ctx, e.x, e.y, e.shirt);
