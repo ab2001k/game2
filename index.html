@@ -145,7 +145,7 @@
 
         /* SETTINGS & MODALS */
         #settings-btn {
-            position: absolute; top: 20px; right: 20px; font-size: 28px; cursor: pointer; z-index: 101;
+            position: absolute; top: 80px; right: 20px; font-size: 28px; cursor: pointer; z-index: 101;
             color: #fff; 
             background: linear-gradient(135deg, rgba(20,20,40,0.95), rgba(0,0,0,0.9)); 
             padding: 12px 16px; 
@@ -160,6 +160,7 @@
             box-shadow: 0 4px 16px rgba(249,176,6,0.4);
             transform: scale(1.05);
         }
+        .hidden-menu { display: none !important; }
         
         .modal {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -291,30 +292,42 @@
 
 <div id="settings-modal" class="modal">
     <div class="modal-box">
-        <h2 style="margin-top:0;">PAUSED</h2>
+        <h2 id="settings-title" style="margin-top:0;">PAUSED</h2>
         <button class="btn-opt" onclick="Game.toggleSound()" id="btn-sound">SOUND: ON</button>
         <button class="btn-opt" onclick="Game.toggleTouch()" id="btn-touch">TOUCH: OFF</button>
+        <button class="btn-opt" onclick="Game.toggleLanguage()" id="btn-lang">LANGUAGE: ENGLISH</button>
         <hr style="border-color:#444; margin:20px 0;">
-        <button class="btn-opt success" onclick="Game.toggleSettings()">RESUME</button>
-        <button class="btn-opt danger" onclick="location.reload()">EXIT TO MENU</button>
+        <button class="btn-opt success" onclick="Game.toggleSettings()" id="btn-resume">RESUME</button>
+        <button class="btn-opt danger" onclick="Game.returnToMenu()" id="btn-exit">EXIT TO MENU</button>
+    </div>
+</div>
+
+<div id="menu-settings-modal" class="modal">
+    <div class="modal-box">
+        <h2 id="menu-settings-title" style="margin-top:0;">SETTINGS</h2>
+        <button class="btn-opt" onclick="Game.toggleSound()" id="menu-btn-sound">SOUND: ON</button>
+        <button class="btn-opt" onclick="Game.toggleTouch()" id="menu-btn-touch">TOUCH: OFF</button>
+        <button class="btn-opt" onclick="Game.toggleLanguage()" id="menu-btn-lang">LANGUAGE: ENGLISH</button>
+        <hr style="border-color:#444; margin:20px 0;">
+        <button class="btn-opt success" onclick="Game.closeMenuSettings()" id="menu-btn-close">CLOSE</button>
     </div>
 </div>
 
 <div id="leaderboard-modal" class="modal">
     <div class="modal-box">
-        <h2>LEADERBOARD</h2>
+        <h2 id="leaderboard-title">LEADERBOARD</h2>
         <div id="leaderboard-list"></div>
-        <button class="btn-opt success" onclick="Game.closeLeaderboard()" style="margin-top:20px">CLOSE</button>
+        <button class="btn-opt success" onclick="Game.closeLeaderboard()" id="lb-close" style="margin-top:20px">CLOSE</button>
     </div>
 </div>
 
 <div id="name-modal" class="modal">
     <div class="modal-box">
-        <h2>ENTER YOUR NAME</h2>
-        <p style="color:#aaa; margin:10px 0;">Cash Stolen: $<span id="final-score-name">0</span></p>
+        <h2 id="name-title">ENTER YOUR NAME</h2>
+        <p style="color:#aaa; margin:10px 0;" id="name-score-label">Cash Stolen: $<span id="final-score-name">0</span></p>
         <input type="text" id="name-input" placeholder="CRIMINAL NAME" maxlength="15">
-        <button class="btn-opt success" onclick="Game.submitScore()">SUBMIT SCORE</button>
-        <button class="btn-opt" onclick="Game.skipScore()">SKIP</button>
+        <button class="btn-opt success" onclick="Game.submitScore()" id="name-submit">SUBMIT SCORE</button>
+        <button class="btn-opt" onclick="Game.skipScore()" id="name-skip">SKIP</button>
     </div>
 </div>
 
@@ -341,53 +354,56 @@
     </div>
 
     <div id="screen-theme" class="screen">
-        <h1>Grand Theft Racer</h1>
+        <h1 id="game-title">Grand Theft Racer</h1>
         <div class="selection-grid">
             <div class="card" onclick="Game.setTheme('metro')">
                 <div class="card-icon" style="color:#00f3ff">&#127751;</div>
-                <div class="card-title">METRO</div>
-                <div class="card-desc">Urban Warfare</div>
+                <div class="card-title" data-en="METRO" data-hi="मेट्रो">METRO</div>
+                <div class="card-desc" data-en="Urban Warfare" data-hi="शहरी युद्ध">Urban Warfare</div>
             </div>
             <div class="card" onclick="Game.setTheme('desert')">
                 <div class="card-icon" style="color:#e67e22">&#127964;</div>
-                <div class="card-title">DESERT</div>
-                <div class="card-desc">Wasteland Chase</div>
+                <div class="card-title" data-en="DESERT" data-hi="रेगिस्तान">DESERT</div>
+                <div class="card-desc" data-en="Wasteland Chase" data-hi="वीरान पीछा">Wasteland Chase</div>
             </div>
             <div class="card" onclick="Game.setTheme('jungle')">
                 <div class="card-icon" style="color:#2ecc71">&#127794;</div>
-                <div class="card-title">JUNGLE</div>
-                <div class="card-desc">Wild Territory</div>
+                <div class="card-title" data-en="JUNGLE" data-hi="जंगल">JUNGLE</div>
+                <div class="card-desc" data-en="Wild Territory" data-hi="जंगली इलाका">Wild Territory</div>
             </div>
         </div>
-        <button class="btn-opt" onclick="Game.showLeaderboard()" style="margin-top:30px; width:200px;">VIEW LEADERBOARD</button>
+        <div style="display:flex; gap:15px; margin-top:30px;">
+            <button class="btn-opt" onclick="Game.showLeaderboard()" id="btn-leaderboard" style="width:200px;">VIEW LEADERBOARD</button>
+            <button class="btn-opt" onclick="Game.showMenuSettings()" id="btn-settings-menu" style="width:200px;">SETTINGS</button>
+        </div>
     </div>
 
     <div id="screen-car" class="screen hidden">
-        <h1>Select Vehicle</h1>
+        <h1 id="select-vehicle-title">Select Vehicle</h1>
         <div class="selection-grid">
             <div class="card" onclick="Game.setCar('racer')">
                 <div class="card-icon" style="color:#e74c3c">&#127950;</div>
-                <div class="card-title">SPEEDSTER</div>
-                <div class="card-desc">Fast & Agile</div>
+                <div class="card-title" data-en="SPEEDSTER" data-hi="तेज़ गाड़ी">SPEEDSTER</div>
+                <div class="card-desc" data-en="Fast & Agile" data-hi="तेज़ और फुर्तीला">Fast & Agile</div>
             </div>
             <div class="card" onclick="Game.setCar('tank')">
                 <div class="card-icon" style="color:#27ae60">&#128664;</div>
-                <div class="card-title">ENFORCER</div>
-                <div class="card-desc">Heavy & Tough</div>
+                <div class="card-title" data-en="ENFORCER" data-hi="टैंक">ENFORCER</div>
+                <div class="card-desc" data-en="Heavy & Tough" data-hi="भारी और मजबूत">Heavy & Tough</div>
             </div>
         </div>
     </div>
 
     <div id="wasted-screen" class="screen">
-        <div class="game-over-title">WASTED</div>
-        <p style="font-size: 28px; color:#fff; margin-top:30px; font-weight:700;">CASH STOLEN: $<span id="final-score-wasted">0</span></p>
-        <p class="blink" style="margin-top: 40px; color: #f9b006; font-size:20px; letter-spacing:2px;">PRESS [SPACE] TO CONTINUE</p>
+        <div class="game-over-title" id="wasted-title">WASTED</div>
+        <p style="font-size: 28px; color:#fff; margin-top:30px; font-weight:700;" id="wasted-text">CASH STOLEN: $<span id="final-score-wasted">0</span></p>
+        <p class="blink" style="margin-top: 40px; color: #f9b006; font-size:20px; letter-spacing:2px;" id="wasted-continue">PRESS [SPACE] TO CONTINUE</p>
     </div>
 
     <div id="busted-screen" class="screen">
-        <div class="game-over-title">BUSTED</div>
-        <p style="font-size: 28px; color:#fff; margin-top:30px; font-weight:700;">CASH CONFISCATED: $<span id="final-score-busted">0</span></p>
-        <p class="blink" style="margin-top: 40px; color: #f9b006; font-size:20px; letter-spacing:2px;">PRESS [SPACE] TO CONTINUE</p>
+        <div class="game-over-title" id="busted-title">BUSTED</div>
+        <p style="font-size: 28px; color:#fff; margin-top:30px; font-weight:700;" id="busted-text">CASH CONFISCATED: $<span id="final-score-busted">0</span></p>
+        <p class="blink" style="margin-top: 40px; color: #f9b006; font-size:20px; letter-spacing:2px;" id="busted-continue">PRESS [SPACE] TO CONTINUE</p>
     </div>
 
     <div id="mobile-controls">
@@ -433,6 +449,133 @@ const ctx = canvas.getContext('2d');
 const GW = 800, GH = 600;
 function resize(){ canvas.width=GW; canvas.height=GH; }
 resize();
+
+// ==================== TRANSLATION SYSTEM ====================
+const I18n = {
+    current: 'en',
+    translations: {
+        en: {
+            // Menu
+            'game-title': 'Grand Theft Racer',
+            'btn-leaderboard': 'VIEW LEADERBOARD',
+            'btn-settings-menu': 'SETTINGS',
+            'select-vehicle-title': 'Select Vehicle',
+            
+            // Settings (In-Game Pause)
+            'settings-title': 'PAUSED',
+            'btn-sound': 'SOUND: ',
+            'btn-touch': 'TOUCH: ',
+            'btn-lang': 'LANGUAGE: ENGLISH',
+            'btn-resume': 'RESUME',
+            'btn-exit': 'EXIT TO MENU',
+            
+            // Settings (Menu)
+            'menu-settings-title': 'SETTINGS',
+            'menu-btn-close': 'CLOSE',
+            
+            // Leaderboard
+            'leaderboard-title': 'LEADERBOARD',
+            'lb-close': 'CLOSE',
+            'lb-no-scores': 'No scores yet. Be the first!',
+            
+            // Name Entry
+            'name-title': 'ENTER YOUR NAME',
+            'name-score-label': 'Cash Stolen: $',
+            'name-input-placeholder': 'CRIMINAL NAME',
+            'name-submit': 'SUBMIT SCORE',
+            'name-skip': 'SKIP',
+            
+            // Game Over
+            'wasted-title': 'WASTED',
+            'wasted-text': 'CASH STOLEN: $',
+            'wasted-continue': 'PRESS [SPACE] TO CONTINUE',
+            'busted-title': 'BUSTED',
+            'busted-text': 'CASH CONFISCATED: $',
+            'busted-continue': 'PRESS [SPACE] TO CONTINUE',
+            
+            // Common
+            'on': 'ON',
+            'off': 'OFF'
+        },
+        hi: {
+            // Menu
+            'game-title': 'ग्रैंड थेफ्ट रेसर',
+            'btn-leaderboard': 'लीडरबोर्ड देखें',
+            'btn-settings-menu': 'सेटिंग्स',
+            'select-vehicle-title': 'गाड़ी चुनें',
+            
+            // Settings (In-Game Pause)
+            'settings-title': 'रुका हुआ',
+            'btn-sound': 'आवाज़: ',
+            'btn-touch': 'टच: ',
+            'btn-lang': 'भाषा: हिंदी',
+            'btn-resume': 'फिर शुरू करें',
+            'btn-exit': 'मेनू पर वापस',
+            
+            // Settings (Menu)
+            'menu-settings-title': 'सेटिंग्स',
+            'menu-btn-close': 'बंद करें',
+            
+            // Leaderboard
+            'leaderboard-title': 'लीडरबोर्ड',
+            'lb-close': 'बंद करें',
+            'lb-no-scores': 'अभी कोई स्कोर नहीं। पहले बनो!',
+            
+            // Name Entry
+            'name-title': 'अपना नाम डालें',
+            'name-score-label': 'चोरी की कैश: $',
+            'name-input-placeholder': 'अपराधी का नाम',
+            'name-submit': 'स्कोर जमा करें',
+            'name-skip': 'छोड़ें',
+            
+            // Game Over
+            'wasted-title': 'मार दिया',
+            'wasted-text': 'चोरी की कैश: $',
+            'wasted-continue': '[SPACE] दबाएं जारी रखने के लिए',
+            'busted-title': 'पकड़ा गया',
+            'busted-text': 'जब्त की गई कैश: $',
+            'busted-continue': '[SPACE] दबाएं जारी रखने के लिए',
+            
+            // Common
+            'on': 'चालू',
+            'off': 'बंद'
+        }
+    },
+    
+    updateUI() {
+        const lang = this.current;
+        const t = this.translations[lang];
+        
+        // Update all elements with IDs
+        Object.keys(t).forEach(key => {
+            const el = document.getElementById(key);
+            if(el) {
+                if(key.includes('btn-sound') || key.includes('menu-btn-sound')) {
+                    const state = AudioSys.enabled ? t.on : t.off;
+                    el.innerText = t[key] + state;
+                } else if(key.includes('btn-touch') || key.includes('menu-btn-touch')) {
+                    const state = document.getElementById('mobile-controls').style.display === 'block' ? t.on : t.off;
+                    el.innerText = t[key] + state;
+                } else if(!key.includes('placeholder') && !key.includes('label')) {
+                    el.innerText = t[key];
+                }
+            }
+        });
+        
+        // Update placeholder
+        const nameInput = document.getElementById('name-input');
+        if(nameInput) nameInput.placeholder = t['name-input-placeholder'];
+        
+        // Update data-attributes
+        document.querySelectorAll('[data-en]').forEach(el => {
+            if(lang === 'hi' && el.dataset.hi) {
+                el.innerText = el.dataset.hi;
+            } else if(lang === 'en' && el.dataset.en) {
+                el.innerText = el.dataset.en;
+            }
+        });
+    }
+};
 
 // ==================== GAME DATA ====================
 const THEMES = {
@@ -850,7 +993,7 @@ const Game = {
     crimeLevel: 0, 
     policeKilled: 0, 
     lastTime: 0,
-    heli: { active:false, x:400, y:-150, hp:30, timer:0, exploding: false, explosionTimer: 0 },
+    heli: { active:false, x:400, y:-150, hp:30, timer:0, exploding: false, explosionTimer: 0, cooldown: 0 },
     entities: [], 
     bullets: [], 
     scenery: [], 
@@ -858,6 +1001,7 @@ const Game = {
     envObjects: [], 
     texts: [],
     assetsLoaded: false,
+    language: 'en',
 
     setTheme(n) { 
         this.theme=THEMES[n]; 
@@ -875,18 +1019,41 @@ const Game = {
         // Load settings
         const snd = Storage.getSettings('sound', 'on');
         const tch = Storage.getSettings('touch', 'off');
+        const lng = Storage.getSettings('language', 'en');
+        
+        this.language = lng;
+        I18n.current = lng;
+        I18n.updateUI();
         
         if(snd === 'off') { 
             AudioSys.enabled=false; 
-            document.getElementById('btn-sound').innerText='SOUND: OFF'; 
         }
         if(tch === 'on') { 
-            document.getElementById('btn-touch').innerText='TOUCH: ON'; 
             document.getElementById('mobile-controls').style.display='block'; 
         }
         
+        I18n.updateUI();
         this.lastTime = performance.now();
         requestAnimationFrame(t => this.loop(t));
+    },
+
+    toggleLanguage() {
+        this.language = this.language === 'en' ? 'hi' : 'en';
+        I18n.current = this.language;
+        Storage.saveSettings('language', this.language);
+        I18n.updateUI();
+    },
+
+    showMenuSettings() {
+        document.getElementById('menu-settings-modal').style.display = 'flex';
+    },
+
+    closeMenuSettings() {
+        document.getElementById('menu-settings-modal').style.display = 'none';
+    },
+
+    returnToMenu() {
+        location.reload();
     },
 
     restart() {
@@ -909,7 +1076,7 @@ const Game = {
         this.score=0; 
         this.policeKilled=0; 
         this.crimeLevel=0;
-        this.heli = { active:false, x:400, y:-150, hp:30, timer:0, exploding: false, explosionTimer: 0 };
+        this.heli = { active:false, x:400, y:-150, hp:30, timer:0, exploding: false, explosionTimer: 0, cooldown: 0 };
         this.entities=[]; 
         this.bullets=[]; 
         this.scenery=[]; 
@@ -921,6 +1088,7 @@ const Game = {
         document.getElementById('wasted-screen').style.display='none';
         document.getElementById('busted-screen').style.display='none';
         document.getElementById('top-hud').style.display='flex';
+        document.getElementById('settings-btn').classList.remove('hidden-menu');
     },
 
     toggleSettings() {
@@ -943,22 +1111,23 @@ const Game = {
     toggleSound() { 
         AudioSys.enabled = !AudioSys.enabled; 
         Storage.saveSettings('sound', AudioSys.enabled?'on':'off'); 
-        document.getElementById('btn-sound').innerText='SOUND: '+(AudioSys.enabled?'ON':'OFF'); 
+        I18n.updateUI();
     },
     
     toggleTouch() { 
         const isOn = document.getElementById('mobile-controls').style.display === 'none'; 
         Storage.saveSettings('touch', isOn?'on':'off'); 
         document.getElementById('mobile-controls').style.display = isOn?'block':'none'; 
-        document.getElementById('btn-touch').innerText='TOUCH: '+(isOn?'ON':'OFF'); 
+        I18n.updateUI();
     },
 
     showLeaderboard() {
         const scores = Storage.getScores();
         const list = document.getElementById('leaderboard-list');
+        const t = I18n.translations[I18n.current];
         
         if(scores.length === 0) {
-            list.innerHTML = '<p style="color:#888; text-align:center; padding:20px;">No scores yet. Be the first!</p>';
+            list.innerHTML = `<p style="color:#888; text-align:center; padding:20px;">${t['lb-no-scores']}</p>`;
         } else {
             list.innerHTML = scores.map((s, i) => 
                 `<div class="lb-entry">
@@ -1033,7 +1202,11 @@ const Game = {
         this.roadOffset = (this.roadOffset + moveDist * 2) % 100;
 
         // HELICOPTER LOGIC
-        if(this.policeKilled >= 4 && !this.heli.active && !this.heli.exploding) { 
+        if(this.heli.cooldown > 0) {
+            this.heli.cooldown -= dt;
+        }
+        
+        if(this.policeKilled >= 4 && !this.heli.active && !this.heli.exploding && this.heli.cooldown <= 0) { 
             this.heli.active=true; 
             this.heli.hp=30; 
             this.heli.exploding = false;
@@ -1057,7 +1230,8 @@ const Game = {
                     speed: p.speed+12, 
                     w: 10, 
                     h: 20, 
-                    targetX: p.x
+                    targetX: p.x,
+                    hp: 1
                 });
                 this.heli.timer = 0;
                 AudioSys.play('warn');
@@ -1078,7 +1252,7 @@ const Game = {
                 );
             }
             
-            // After 2 seconds, spawn wreckage
+            // After 2 seconds, spawn wreckage and start cooldown
             if(this.heli.explosionTimer > 2) {
                 this.entities.push({
                     x: this.heli.x, 
@@ -1093,6 +1267,8 @@ const Game = {
                 });
                 this.heli.exploding = false;
                 this.heli.active = false;
+                this.heli.cooldown = 15; // 15 second cooldown before next helicopter
+                this.spawnText("CHOPPER DOWN! 15s BREAK", 400, 300, '#2ecc71');
             }
         }
 
@@ -1160,19 +1336,25 @@ const Game = {
             let isZebra = this.envObjects.some(e => e.type === 'zebra' && e.y < 100 && e.y > -50);
             let spawnType = isZebra ? 'cross' : 'walk';
             let skin = ['#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#f39c12'][Math.floor(Math.random()*5)];
-            let px = Math.random()>0.5 ? 150 : 650;
+            
+            // Constrain peds to sidewalks (away from billboards at x=160-180 and x=620-640)
+            let px = Math.random()>0.5 ? 120 : 680;
             
             if(spawnType === 'walk') {
                 this.entities.push({
                     x:px, y:-50, type:'ped', speed:1, 
-                    w:15, h:15, hp:1, vx:0, vy: 1, shirt:skin
+                    w:15, h:15, hp:1, vx:0, vy: 1, shirt:skin,
+                    minX: px < 400 ? 100 : 660,
+                    maxX: px < 400 ? 155 : 700
                 });
             } else {
                 let startX = (px < 400) ? 190 : 610;
                 this.entities.push({
                     x:startX, y:-50, type:'ped', speed:1, 
                     w:15, h:15, hp:1, 
-                    vx:(startX<400?50:-50), vy:0, shirt:skin
+                    vx:(startX<400?50:-50), vy:0, shirt:skin,
+                    minX: 190,
+                    maxX: 610
                 });
             }
             
@@ -1180,7 +1362,9 @@ const Game = {
                 this.entities.push({
                     x:px, y:-50, type:'ped_cop', speed:1, 
                     w:15, h:15, hp:1, vx:0, 
-                    vy:Math.random()>0.5?0:1, shirt:'#2980b9'
+                    vy:Math.random()>0.5?0:1, shirt:'#2980b9',
+                    minX: px < 400 ? 100 : 660,
+                    maxX: px < 400 ? 155 : 700
                 });
             }
         }
@@ -1211,11 +1395,25 @@ const Game = {
                 if(e.targetX) { 
                     let diff = e.targetX - e.x; 
                     e.x += diff * 2.5 * dt; 
-                } 
+                }
+                
+                // Missile hits ground
+                if(e.y > GH - 50) {
+                    e.dead = true;
+                    this.spawnPart(e.x, e.y, '#ff6600', 30);
+                    this.spawnPart(e.x, e.y, '#ff0000', 20);
+                    AudioSys.play('explosion');
+                }
             }
             else if (e.type.includes('ped')) { 
                 e.y += moveDist; 
-                e.x += e.vx * dt; 
+                e.x += e.vx * dt;
+                
+                // Constrain peds to their boundaries
+                if(e.minX !== undefined && e.maxX !== undefined) {
+                    e.x = Math.max(e.minX, Math.min(e.maxX, e.x));
+                }
+                
                 if(e.vy) e.y += e.vy * 50 * dt; 
             }
             else if (e.type === 'wreckage') {
@@ -1345,44 +1543,77 @@ const Game = {
                     this.spawnPart(p.x, p.y, '#7f8c8d', 8); 
                 }
                 else {
-                    // Car collision physics
-                    AudioSys.play('crash');
-                    this.crimeLevel = Math.max(1, this.crimeLevel);
+                    // Car collision physics - only when moving relative to each other
+                    let speedDiff = Math.abs(p.speed - (e.speed || 0));
                     
-                    let dx = p.x - e.x;
-                    let force = 350 * (p.mass / (e.mass||1));
-                    
-                    if(Math.abs(dx) > 12) { 
-                        // Side collision - push away
-                        if(p.x < e.x) { 
-                            e.vx = force; 
-                            p.x -= 5;
-                        } else { 
-                            e.vx = -force; 
-                            p.x += 5;
+                    // Only crash if there's significant relative movement
+                    if(speedDiff > 0.5 || p.speed > 3) {
+                        AudioSys.play('crash');
+                        this.crimeLevel = Math.max(1, this.crimeLevel);
+                        
+                        let dx = p.x - e.x;
+                        let force = 350 * (p.mass / (e.mass||1));
+                        
+                        if(Math.abs(dx) > 12) { 
+                            // Side collision - push away
+                            if(p.x < e.x) { 
+                                e.vx = force; 
+                                p.x -= 5;
+                            } else { 
+                                e.vx = -force; 
+                                p.x += 5;
+                            }
+                            p.hp -= 3; 
+                            e.hp -= 6; 
+                            this.spawnPart((p.x+e.x)/2, (p.y+e.y)/2, '#ecf0f1', 8);
+                        } else {
+                            // Head-on collision
+                            p.speed *= 0.7; 
+                            e.y -= 60; 
+                            e.hp -= 18; 
+                            p.hp -= 7; 
+                            this.spawnPart((p.x+e.x)/2, (p.y+e.y)/2, '#bdc3c7', 12);
+                            this.spawnText("CRASH!", p.x, p.y-30, '#e74c3c');
                         }
-                        p.hp -= 3; 
-                        e.hp -= 6; 
-                        this.spawnPart((p.x+e.x)/2, (p.y+e.y)/2, '#ecf0f1', 8);
-                    } else {
-                        // Head-on collision
-                        p.speed *= 0.7; 
-                        e.y -= 60; 
-                        e.hp -= 18; 
-                        p.hp -= 7; 
-                        this.spawnPart((p.x+e.x)/2, (p.y+e.y)/2, '#bdc3c7', 12);
-                        this.spawnText("CRASH!", p.x, p.y-30, '#e74c3c');
-                    }
-                    
-                    if(e.hp<=0) { 
-                        e.dead=true; 
-                        this.spawnPart(e.x, e.y, '#e67e22', 25); 
-                        if(e.type==='police') {
-                            this.policeKilled++; 
-                            this.spawnText("+POLICE KILL", e.x, e.y-20, '#e74c3c');
+                        
+                        if(e.hp<=0) { 
+                            e.dead=true; 
+                            this.spawnPart(e.x, e.y, '#e67e22', 25); 
+                            if(e.type==='police') {
+                                this.policeKilled++; 
+                                this.spawnText("+POLICE KILL", e.x, e.y-20, '#e74c3c');
+                            }
                         }
                     }
                 }
+            }
+        });
+
+        // Missile Collision with NPCs and Cars
+        this.entities.forEach(missile => {
+            if(missile.type === 'missile' && !missile.dead) {
+                this.entities.forEach(target => {
+                    if(target !== missile && !target.dead && 
+                       ['civ', 'police', 'ped', 'ped_cop'].includes(target.type) &&
+                       Math.abs(missile.x - target.x) < 35 && 
+                       Math.abs(missile.y - target.y) < 35) {
+                        // Missile hit!
+                        missile.dead = true;
+                        target.dead = true;
+                        
+                        // Big explosion
+                        this.spawnPart(target.x, target.y, '#ff6600', 40);
+                        this.spawnPart(target.x, target.y, '#ff0000', 30);
+                        AudioSys.play('explosion');
+                        
+                        if(target.type === 'police') {
+                            this.policeKilled++;
+                            this.spawnText("MISSILE KILL!", target.x, target.y-30, '#f39c12');
+                        } else if(target.type.includes('ped')) {
+                            this.spawnText("PED KILLED!", target.x, target.y-30, '#e74c3c');
+                        }
+                    }
+                });
             }
         });
 
@@ -1493,11 +1724,17 @@ const Game = {
                 ctx.lineWidth = 2;
                 ctx.strokeRect(s.x-35, s.y-90, 70, 90);
                 
-                // Windows
-                ctx.fillStyle= Math.random()>0.6 ? '#f39c12' : '#34495e'; 
+                // Windows - only some are lit
+                if(!s.windowPattern) {
+                    s.windowPattern = Array(8).fill(0).map(() => Math.random() > 0.6);
+                }
+                let idx = 0;
                 for(let wy=s.y-80; wy<s.y; wy+=20) {
+                    ctx.fillStyle = s.windowPattern[idx] ? '#f39c12' : '#34495e'; 
                     ctx.fillRect(s.x-25, wy, 8, 12); 
-                    ctx.fillRect(s.x+17, wy, 8, 12); 
+                    ctx.fillStyle = s.windowPattern[idx+1] ? '#f39c12' : '#34495e'; 
+                    ctx.fillRect(s.x+17, wy, 8, 12);
+                    idx += 2;
                 }
             }
             else if (s.type==='tree') { 
@@ -1648,6 +1885,11 @@ const Game = {
 };
 
 // Start game
+document.addEventListener('DOMContentLoaded', () => {
+    // Hide settings button on menu screens
+    document.getElementById('settings-btn').classList.add('hidden-menu');
+});
+
 Game.init();
 </script>
 </body>
